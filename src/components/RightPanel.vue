@@ -6,12 +6,12 @@
     <!-- Header -->
     <div
       class="px-4 pt-[14px] pb-[11px] flex-shrink-0"
-      style="border-bottom: 1px solid #d9d9d9; background: #ffffff;"
+      style="border-bottom: 1px solid #e2e8f0; background: #ffffff;"
     >
       <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint mb-[3px]">Design Tools</p>
       <h2
         class="font-syne text-[16px] font-extrabold tracking-[-0.03em] leading-tight"
-        style="background: linear-gradient(135deg, #1a1916 30%, #706d69); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+        style="background: linear-gradient(135deg, #0f172a 30%, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
       >
         {{ TOOL_NAMES[activeTool] || activeTool }}
       </h2>
@@ -30,7 +30,7 @@
     <!-- Cart CTA -->
     <div
       class="px-4 pt-[14px] safe-pb flex-shrink-0"
-      style="border-top: 1px solid #d9d9d9; background: #ffffff;"
+      style="border-top: 1px solid #e2e8f0; background: #ffffff;"
     >
       <!-- Price row -->
       <div class="flex items-end justify-between mb-3">
@@ -38,7 +38,7 @@
         <div class="text-right">
           <span
             class="font-syne text-[22px] font-extrabold tracking-[-0.04em] leading-none"
-            style="background: linear-gradient(135deg, #1a1916, #706d69); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+            style="background: linear-gradient(135deg, #4f46e5, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
           >$34.99</span>
           <span class="block text-[10px] text-faint font-syne tracking-wide">+ personalization</span>
         </div>
@@ -46,8 +46,8 @@
 
       <!-- Add to Cart button -->
       <button
-        class="group relative w-full h-[48px] rounded-[11px] font-dm font-semibold text-[14px] tracking-normal text-white flex items-center justify-center gap-2 overflow-hidden transition-all duration-200 hover:bg-[#2a2a2a] active:scale-[.97] mb-[2px]"
-        style="background: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.14);"
+        class="group relative w-full h-[48px] rounded-[11px] font-dm font-semibold text-[14px] tracking-normal text-white flex items-center justify-center gap-2 overflow-hidden transition-all duration-200 hover:brightness-110 active:scale-[.97] mb-[2px]"
+        style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 4px 14px rgba(99,102,241,0.30);"
         @click="addToCart"
       >
         <span class="relative text-[17px] leading-none">🛒</span>

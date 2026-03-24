@@ -16,12 +16,15 @@
             placeholder="Type something…"
             maxlength="28"
             autocomplete="off"
-            class="flex-1 bg-surface2 border border-line rounded-sm px-3 py-[9px] text-sm text-fore placeholder:text-faint outline-none transition-colors focus:border-accent focus:shadow-[0_0_0_2px_rgba(0,128,96,0.14)]"
+            class="flex-1 rounded-[8px] px-3 py-[9px] text-sm outline-none transition-all"
+            style="background:#f8fafc; border:1.5px solid #e2e8f0; color:#0f172a; caret-color:#6366f1;"
+            @focus="(e) => (e.target as HTMLInputElement).style.borderColor = '#6366f1'"
+            @blur="(e) => (e.target as HTMLInputElement).style.borderColor = '#e2e8f0'"
             @keydown.enter="submitText"
           />
           <button
-            class="flex-shrink-0 h-[40px] px-4 rounded-[7px] font-dm font-semibold text-[13px] text-white transition-all active:scale-[.95] hover:bg-[#2a2a2a]"
-            style="background:#1a1a1a;"
+            class="flex-shrink-0 h-[40px] px-4 rounded-[7px] font-dm font-semibold text-[13px] text-white transition-all active:scale-[.95] hover:brightness-110"
+            style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 3px 10px rgba(99,102,241,0.28);"
             @click="submitText"
           >Add</button>
         </div>
@@ -43,9 +46,9 @@
             v-for="src in sources"
             :key="src.label"
             class="flex flex-col items-center gap-[5px] py-[12px] px-2 rounded-[10px] cursor-pointer transition-all active:scale-[.94]"
-            style="background:#f1f1f1; border:1px dashed #c4c4c4;"
-            @mouseenter="(e) => { const b = e.currentTarget as HTMLElement; b.style.borderColor='rgba(0,128,96,0.40)'; b.style.background='rgba(0,128,96,0.06)'; }"
-            @mouseleave="(e) => { const b = e.currentTarget as HTMLElement; b.style.borderColor='#c4c4c4'; b.style.background='#f1f1f1'; }"
+            style="background:#f8fafc; border:1px dashed #cbd5e1;"
+            @mouseenter="(e) => { const b = e.currentTarget as HTMLElement; b.style.borderColor='rgba(99,102,241,0.45)'; b.style.background='rgba(99,102,241,0.06)'; }"
+            @mouseleave="(e) => { const b = e.currentTarget as HTMLElement; b.style.borderColor='#cbd5e1'; b.style.background='#f8fafc'; }"
             @click="showToast(src.toast)"
           >
             <span class="text-[20px]">{{ src.icon }}</span>
@@ -105,7 +108,7 @@
         <template v-else>
           <div
             class="rounded-[9px] p-[10px] flex flex-col gap-[10px]"
-            style="background:#f1f1f1; border:1px solid #d9d9d9;"
+            style="background:#f8fafc; border:1px solid #e2e8f0;"
           >
             <SliderRow label="Size"   :min="25"  :max="400" v-model="mobSize" :displayValue="mobSize + '%'" />
             <SliderRow label="Rotate" :min="0"   :max="360" v-model="mobRot"  :displayValue="mobRot + '°'" />

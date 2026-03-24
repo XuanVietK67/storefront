@@ -13,7 +13,10 @@
           placeholder="Type something…"
           maxlength="28"
           autocomplete="off"
-          class="w-full bg-surface2 border border-line rounded-sm pl-3 pr-14 py-[10px] text-sm text-fore placeholder:text-faint outline-none transition-all duration-150 focus:border-accent focus:bg-surface3 focus:shadow-[0_0_0_3px_rgba(0,128,96,0.14)]"
+          class="w-full rounded-[8px] pl-3 pr-14 py-[10px] text-sm outline-none transition-all duration-150 placeholder:text-faint"
+          style="background:#f8fafc; border:1.5px solid #e2e8f0; color:#0f172a; caret-color:#6366f1;"
+          @focus="(e) => (e.target as HTMLInputElement).style.borderColor = '#6366f1'"
+          @blur="(e) => (e.target as HTMLInputElement).style.borderColor = '#e2e8f0'"
           @keydown.enter="submit"
         />
         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-syne tracking-wider text-faint border border-line rounded px-[5px] py-[2px] pointer-events-none select-none">
@@ -23,8 +26,8 @@
 
       <!-- Add to Canvas button -->
       <button
-        class="group relative w-full h-[46px] rounded-[10px] font-dm font-semibold text-[14px] tracking-normal text-white flex items-center justify-center gap-2 overflow-hidden transition-all duration-200 hover:bg-[#2a2a2a] active:scale-[.97]"
-        style="background: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.12);"
+        class="group relative w-full h-[46px] rounded-[10px] font-dm font-semibold text-[14px] tracking-normal text-white flex items-center justify-center gap-2 overflow-hidden transition-all duration-200 hover:brightness-110 active:scale-[.97]"
+        style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 4px 14px rgba(99,102,241,0.30);"
         @click="submit"
         @mouseenter="hovered = true"
         @mouseleave="hovered = false"

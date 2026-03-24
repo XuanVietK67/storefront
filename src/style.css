@@ -16,15 +16,15 @@
   }
 
   body {
-    background-color: #f6f6f1;
-    color: #1a1a1a;
+    background-color: #f5f7ff;
+    color: #0f172a;
     font-family: 'DM Sans', sans-serif;
     font-size: 14px;
     line-height: 1.5;
   }
 
   input[type="range"] {
-    -webkit-appearance: none;
+    /* -webkit-appearance: none; */
     height: 3px;
     background: #d9d9d9;
     border-radius: 2px;
@@ -68,18 +68,18 @@
   }
 }
 
-/* Polaris variable overrides for Shopify-style light theme */
+/* Polaris variable overrides */
 :root {
-  --p-color-bg: #f6f6f1;
+  --p-color-bg: #f5f7ff;
   --p-color-bg-surface: #ffffff;
-  --p-color-bg-surface-hover: #f1f1f1;
-  --p-color-bg-interactive: #008060;
-  --p-color-bg-interactive-hover: #00956f;
-  --p-color-text: #1a1a1a;
-  --p-color-text-interactive: #008060;
-  --p-color-border: #d9d9d9;
-  --p-color-border-hover: #c4c4c4;
-  --p-color-input-bg-surface: #f1f1f1;
+  --p-color-bg-surface-hover: #f1f5f9;
+  --p-color-bg-interactive: #6366f1;
+  --p-color-bg-interactive-hover: #4f46e5;
+  --p-color-text: #0f172a;
+  --p-color-text-interactive: #4f46e5;
+  --p-color-border: #e2e8f0;
+  --p-color-border-hover: #cbd5e1;
+  --p-color-input-bg-surface: #ffffff;
   --p-border-radius-2: 9px;
   --p-border-radius-3: 13px;
   --p-font-family-sans: 'DM Sans', sans-serif;
@@ -99,18 +99,18 @@
 
 /* Polaris text field input */
 .Polaris-TextField__Input {
-  background: #f1f1f1 !important;
-  color: #1a1a1a !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
   font-family: 'DM Sans', sans-serif !important;
 }
 .Polaris-TextField__Backdrop {
-  background: #f1f1f1 !important;
-  border-color: #d9d9d9 !important;
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
 }
 .Polaris-TextField:focus-within .Polaris-TextField__Backdrop {
-  border-color: #008060 !important;
-  box-shadow: 0 0 0 2px rgba(0,128,96,0.18) !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.18) !important;
 }
 .Polaris-TextField__Input::placeholder {
-  color: #a8a8a8 !important;
+  color: #94a3b8 !important;
 }
