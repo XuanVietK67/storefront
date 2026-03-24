@@ -45,8 +45,6 @@ No test runner is configured.
 
 When fixing bugs, only work on the `fixBug` branch.
 
-If using `feat-current`, continue developing the new feature on the current branch.
-
 ### Adding a new tool/panel
 
 1. Add the tool entry to the `tools` array in `src/components/Sidebar.vue:42` (desktop) and mirror it in `src/components/MobileToolbar.vue` (mobile).
