@@ -15,15 +15,15 @@ CustomMaker is a single-page bag personalizer. Users place text, stickers, and i
 
 ## Key Directories
 
-| Path | Purpose |
-|------|---------|
-| `src/views/` | Single route view (`PersonalizerView.vue`) — root layout |
-| `src/components/canvas/` | Canvas rendering: bag SVG, draggable elements |
-| `src/components/panels/` | Tool panels: Text, Image, Sticker, Icon, Adjust, Layers |
-| `src/components/ui/` | Reusable primitives: ColorStrip, FontChips, SliderRow, EmojiGrid |
-| `src/composables/` | Shared state and logic: `useCanvas`, `useHistory`, `useToast`, `useDrag` |
-| `src/types/index.ts` | All shared TypeScript interfaces (`CanvasElement`, `SidebarItem`, etc.) |
-| `src/constants/index.ts` | Static data: STICKERS, ICONS, FONTS, COLORS, CANVAS_SIZE, TOOL_NAMES |
+| Path                     | Purpose                                                                  |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `src/views/`             | Single route view (`PersonalizerView.vue`) — root layout                 |
+| `src/components/canvas/` | Canvas rendering: bag SVG, draggable elements                            |
+| `src/components/panels/` | Tool panels: Text, Image, Sticker, Icon, Adjust, Layers                  |
+| `src/components/ui/`     | Reusable primitives: ColorStrip, FontChips, SliderRow, EmojiGrid         |
+| `src/composables/`       | Shared state and logic: `useCanvas`, `useHistory`, `useToast`, `useDrag` |
+| `src/types/index.ts`     | All shared TypeScript interfaces (`CanvasElement`, `SidebarItem`, etc.)  |
+| `src/constants/index.ts` | Static data: STICKERS, ICONS, FONTS, COLORS, CANVAS_SIZE, TOOL_NAMES     |
 
 ## Build & Dev Commands
 
@@ -41,7 +41,11 @@ No test runner is configured.
 
 ## Adding New Features / Fixing Bugs
 
-**IMPORTANT**: When you work on a new feature or bug, create a new git branch first. Then work on changes in that branch for the reminder of the session
+**IMPORTANT**: When you work on a new feature, create a new git branch first. Then work on changes in that branch for the reminder of the session.
+
+When fixing bugs, only work on the `fixBug` branch.
+
+If using `feat-current`, continue developing the new feature on the current branch.
 
 ### Adding a new tool/panel
 

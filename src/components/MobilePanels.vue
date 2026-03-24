@@ -3,7 +3,11 @@
     <!-- Text panel -->
     <div
       class="flex-shrink-0 bg-surface border-t border-line overflow-hidden transition-all duration-[220ms]"
-      :style="activePanel === 'mp-text' ? 'max-height:215px; opacity:1' : 'max-height:0; opacity:0'"
+      :style="
+        activePanel === 'mp-text'
+          ? 'max-height:215px; opacity:1'
+          : 'max-height:0; opacity:0'
+      "
     >
       <div class="p-[12px_14px_14px] flex flex-col gap-2">
         <div class="flex gap-2">
@@ -28,7 +32,11 @@
     <!-- Image panel -->
     <div
       class="flex-shrink-0 bg-surface border-t border-line overflow-hidden transition-all duration-[220ms]"
-      :style="activePanel === 'mp-image' ? 'max-height:215px; opacity:1' : 'max-height:0; opacity:0'"
+      :style="
+        activePanel === 'mp-image'
+          ? 'max-height:215px; opacity:1'
+          : 'max-height:0; opacity:0'
+      "
     >
       <div class="p-[12px_14px_14px] flex flex-col gap-2">
         <div class="grid grid-cols-3 gap-[7px] mb-[9px]">
@@ -51,7 +59,11 @@
     <!-- Sticker panel -->
     <div
       class="flex-shrink-0 bg-surface border-t border-line overflow-hidden transition-all duration-[220ms]"
-      :style="activePanel === 'mp-sticker' ? 'max-height:215px; opacity:1' : 'max-height:0; opacity:0'"
+      :style="
+        activePanel === 'mp-sticker'
+          ? 'max-height:215px; opacity:1'
+          : 'max-height:0; opacity:0'
+      "
     >
       <div class="p-[12px_14px_14px]">
         <div class="flex gap-[5px] overflow-x-auto scrollbar-none pb-[3px]">
@@ -63,7 +75,11 @@
     <!-- Icon panel -->
     <div
       class="flex-shrink-0 bg-surface border-t border-line overflow-hidden transition-all duration-[220ms]"
-      :style="activePanel === 'mp-icon' ? 'max-height:215px; opacity:1' : 'max-height:0; opacity:0'"
+      :style="
+        activePanel === 'mp-icon'
+          ? 'max-height:215px; opacity:1'
+          : 'max-height:0; opacity:0'
+      "
     >
       <div class="p-[12px_14px_14px]">
         <div class="flex gap-[5px] overflow-x-auto scrollbar-none pb-[3px]">
@@ -75,11 +91,27 @@
     <!-- Adjust panel -->
     <div
       class="flex-shrink-0 bg-surface border-t border-line overflow-hidden transition-all duration-[220ms]"
-      :style="activePanel === 'mp-adjust' ? 'max-height:215px; opacity:1' : 'max-height:0; opacity:0'"
+      :style="
+        activePanel === 'mp-adjust'
+          ? 'max-height:215px; opacity:1'
+          : 'max-height:0; opacity:0'
+      "
     >
       <div class="p-[12px_14px_14px] flex flex-col gap-2">
-        <SliderRow label="Size"   :min="25" :max="400" v-model="mobSize" :displayValue="mobSize + '%'" />
-        <SliderRow label="Rotate" :min="0"  :max="360" v-model="mobRot"  :displayValue="mobRot + '°'" />
+        <SliderRow
+          label="Size"
+          :min="25"
+          :max="400"
+          v-model="mobSize"
+          :displayValue="mobSize + '%'"
+        />
+        <SliderRow
+          label="Rotate"
+          :min="0"
+          :max="360"
+          v-model="mobRot"
+          :displayValue="mobRot + '°'"
+        />
         <ColorStrip v-model="mobAdjColor" class="mt-[9px]" />
       </div>
     </div>
@@ -87,47 +119,69 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import ColorStrip from '@/components/ui/ColorStrip.vue'
-import FontChips  from '@/components/ui/FontChips.vue'
-import EmojiGrid  from '@/components/ui/EmojiGrid.vue'
-import SliderRow  from '@/components/ui/SliderRow.vue'
-import { STICKERS, ICONS, PRESETS } from '@/constants'
-import { useCanvas } from '@/composables/useCanvas'
-import { useToast }  from '@/composables/useToast'
-import type { UploadSource } from '@/types'
+import { ref, watch } from "vue";
+import ColorStrip from "@/components/ui/ColorStrip.vue";
+import FontChips from "@/components/ui/FontChips.vue";
+import EmojiGrid from "@/components/ui/EmojiGrid.vue";
+import SliderRow from "@/components/ui/SliderRow.vue";
+import { STICKERS, ICONS, PRESETS } from "@/constants";
+import { useCanvas } from "@/composables/useCanvas";
+import { useToast } from "@/composables/useToast";
+import type { UploadSource } from "@/types";
 
-defineProps<{ activePanel: string | null }>()
+defineProps<{ activePanel: string | null }>();
 
-const { addText, addSticker, addIcon, selectedEl, updateEl, curColor, curFont } = useCanvas()
-const { showToast } = useToast()
+const {
+  addText,
+  addSticker,
+  addIcon,
+  selectedEl,
+  updateEl,
+  curColor,
+  curFont,
+} = useCanvas();
+const { showToast } = useToast();
 
-const mobTextInput = ref<string>('')
-const mobColor     = ref<string>(curColor.value)
-const mobFont      = ref<string>(curFont.value)
-const mobSize      = ref<number>(100)
-const mobRot       = ref<number>(0)
-const mobAdjColor  = ref<string>('#1a1a1a')
+const mobTextInput = ref<string>("");
+const mobColor = ref<string>(curColor.value);
+const mobFont = ref<string>(curFont.value);
+const mobSize = ref<number>(100);
+const mobRot = ref<number>(0);
+const mobAdjColor = ref<string>("#1a1a1a");
 
-watch(mobColor, v => { curColor.value = v })
-watch(mobFont,  v => { curFont.value  = v })
-watch(selectedEl, el => {
-  if (!el) return
-  mobSize.value = Math.round((el.scale    ?? 1) * 100)
-  mobRot.value  = Math.round( el.rotation ?? 0)
-}, { immediate: true })
-watch(mobSize,     v => { if (selectedEl.value) updateEl(selectedEl.value.id, { scale: v / 100 }) })
-watch(mobRot,      v => { if (selectedEl.value) updateEl(selectedEl.value.id, { rotation: v }) })
-watch(mobAdjColor, v => { if (selectedEl.value) updateEl(selectedEl.value.id, { color: v }) })
+watch(mobColor, (v) => {
+  curColor.value = v;
+});
+watch(mobFont, (v) => {
+  curFont.value = v;
+});
+watch(
+  selectedEl,
+  (el) => {
+    if (!el) return;
+    mobSize.value = Math.round((el.scale ?? 1) * 100);
+    mobRot.value = Math.round(el.rotation ?? 0);
+  },
+  { immediate: true },
+);
+watch(mobSize, (v) => {
+  if (selectedEl.value) updateEl(selectedEl.value.id, { scale: v / 100 });
+});
+watch(mobRot, (v) => {
+  if (selectedEl.value) updateEl(selectedEl.value.id, { rotation: v });
+});
+watch(mobAdjColor, (v) => {
+  if (selectedEl.value) updateEl(selectedEl.value.id, { color: v });
+});
 
 function submitText(): void {
-  addText(mobTextInput.value)
-  mobTextInput.value = ''
+  addText(mobTextInput.value);
+  mobTextInput.value = "";
 }
 
 const sources: UploadSource[] = [
-  { icon: '📷', label: 'Camera',  toast: '📷 Camera' },
-  { icon: '🗂',  label: 'Gallery', toast: '🗂 Gallery' },
-  { icon: '🔗', label: 'URL',     toast: '🔗 URL' },
-]
+  { icon: "📷", label: "Camera", toast: "📷 Camera" },
+  { icon: "🗂", label: "Gallery", toast: "🗂 Gallery" },
+  { icon: "🔗", label: "URL", toast: "🔗 URL" },
+];
 </script>
