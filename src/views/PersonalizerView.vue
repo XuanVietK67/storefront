@@ -63,14 +63,16 @@
 
     </div>
 
-    <!-- Mobile toolbar -->
+    <!-- Mobile: inline text editor replaces toolbar when a text element is selected -->
+    <MobileTextEditBar v-if="selectedEl?.type === 'text'" />
     <MobileToolbar
+      v-else
       :activePanel="activeMobPanel"
       @toggle="toggleMobPanel"
     />
 
-    <!-- Mobile panels -->
-    <MobilePanels :activePanel="activeMobPanel" />
+    <!-- Mobile panels: hidden while text editing to keep the layout uncluttered -->
+    <MobilePanels v-if="selectedEl?.type !== 'text'" :activePanel="activeMobPanel" />
 
     <!-- Mobile CTA -->
     <MobileCta />
@@ -88,15 +90,16 @@ import TopBar        from '@/components/TopBar.vue'
 import Sidebar       from '@/components/Sidebar.vue'
 import ProductCanvas from '@/components/canvas/ProductCanvas.vue'
 import RightPanel    from '@/components/RightPanel.vue'
-import MobileToolbar from '@/components/MobileToolbar.vue'
-import MobilePanels  from '@/components/MobilePanels.vue'
+import MobileToolbar    from '@/components/MobileToolbar.vue'
+import MobileTextEditBar from '@/components/MobileTextEditBar.vue'
+import MobilePanels      from '@/components/MobilePanels.vue'
 import MobileCta     from '@/components/MobileCta.vue'
 import Toast         from '@/components/Toast.vue'
 
 import { useCanvas } from '@/composables/useCanvas'
 
 const {
-  elements, selectedId, canvasScale,
+  elements, selectedId, selectedEl, canvasScale,
   selectEl, deselect, removeEl, updateEl,
   addSticker, undo, redo, doClear, zoom,
 } = useCanvas()

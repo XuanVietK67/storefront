@@ -119,5 +119,6 @@ export function useCanvas() {
     redo,
     zoom,
     addToCart,
+    saveUndo,
   }
 }
