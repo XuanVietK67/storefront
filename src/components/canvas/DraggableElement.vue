@@ -11,7 +11,7 @@
       zIndex: isSelected ? 10 : 1,
     }"
     @mousedown="(e: MouseEvent) => onDragStart(e, element.x, element.y)"
-    @touchstart.passive="(e: TouchEvent) => onDragStart(e, element.x, element.y)"
+    @touchstart="(e: TouchEvent) => onDragStart(e, element.x, element.y)"
     @click.stop="$emit('select', element.id)"
     @mouseenter="$emit('hint')"
   >
@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+// import { ref } from 'vue'
 import { makeDragHandlers, makeResizeHandlers } from '@/composables/useDrag'
 import type { CanvasElement } from '@/types'
 
@@ -76,7 +76,7 @@ const emit = defineEmits<{
   hint:   []
 }>()
 
-const elRef = ref<HTMLDivElement | null>(null)
+// const elRef = ref<HTMLDivElement | null>(null)
 
 const { onPointerDown: onDragStart } = makeDragHandlers(
   (x, y) => emit('move', { id: props.element.id, x, y }),

@@ -13,6 +13,18 @@ export interface CanvasElement {
   shadow?: boolean
 }
 
+export interface CartOrder {
+  orderId:  string
+  product:  string
+  price:    string
+  savedAt:  string          // ISO timestamp
+  design: {
+    elements:     CanvasElement[]
+    textLabels:   string[]  // content of every text element
+    elementCount: number
+  }
+}
+
 export interface UploadSource {
   icon: string
   label: string

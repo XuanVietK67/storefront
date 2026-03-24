@@ -1,8 +1,7 @@
 import { ref, computed } from 'vue'
 import { useHistory } from './useHistory'
 import { useToast } from './useToast'
-import { CANVAS_SIZE } from '@/constants'
-import type { CanvasElement } from '@/types'
+import type { CanvasElement, CartOrder } from '@/types'
 
 let _nextId = 1
 function uid(): string { return `el_${_nextId++}_${Date.now()}` }
@@ -95,8 +94,39 @@ function zoom(factor: number): void {
 
 function addToCart(): void {
   if (!elements.value.length) { showToast('🎨 Add something first!'); return }
+
+  // Deep-clone the current canvas state
+  const snapshot: CanvasElement[] = JSON.parse(JSON.stringify(elements.value))
+  const textLabels = snapshot.filter(e => e.type === 'text').map(e => e.content)
+
+  const order: CartOrder = {
+    orderId:  `order_${Date.now()}`,
+    product:  'Classic Canvas Tote — Natural',
+    price:    '$34.99',
+    savedAt:  new Date().toISOString(),
+    design: {
+      elements:     snapshot,
+      textLabels,
+      elementCount: snapshot.length,
+    },
+  }
+
+  // Persist to localStorage (overwrite with latest order)
+  try {
+    localStorage.setItem('custommaker_cart', JSON.stringify(order))
+  } catch {
+    // quota exceeded or private-browsing restriction — silent fail
+  }
+
+  console.log('[CustomMaker] Cart order saved:', order)
+
+  // Confirmation toasts
+  const designLabel = textLabels.length
+    ? `"${textLabels[0]}"${textLabels.length > 1 ? ` +${textLabels.length - 1} more` : ''}`
+    : `${snapshot.length} element${snapshot.length !== 1 ? 's' : ''}`
+
   showToast('🛒 Added to cart!')
-  setTimeout(() => showToast('🎉 Personalization saved ✓'), 2400)
+  setTimeout(() => showToast(`✅ Design saved — ${designLabel}`), 2000)
 }
 
 export function useCanvas() {

@@ -21,7 +21,7 @@
       @click="addToCart"
     >
       <span class="relative">🛒</span>
-      <span class="relative">Add to Cart · $34.99</span>
+      <span class="relative">Add to Cart </span>
     </button>
   </div>
 </template>
