@@ -18,16 +18,16 @@
       :key="el.id"
       class="group flex items-center gap-2 px-[10px] py-[8px] rounded-[9px] cursor-pointer transition-all duration-150"
       :style="selectedId === el.id
-        ? 'background: rgba(245,200,66,0.12); border: 1px solid rgba(245,200,66,0.40); box-shadow: 0 2px 8px rgba(245,200,66,0.10);'
-        : 'background: #f3f1ec; border: 1px solid #e8e5df;'"
+        ? 'background: rgba(0,128,96,0.08); border: 1px solid rgba(0,128,96,0.28); box-shadow: 0 2px 8px rgba(0,128,96,0.08);'
+        : 'background: #f1f1f1; border: 1px solid #d9d9d9;'"
       @click="selectEl(el.id)"
     >
       <!-- Layer number badge -->
       <span
         class="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-syne font-bold"
         :style="selectedId === el.id
-          ? 'background: rgba(245,200,66,0.2); color: #b08800;'
-          : 'background: #ece9e3; color: #a09d99;'"
+          ? 'background: rgba(0,128,96,0.15); color: #008060;'
+          : 'background: #e8e8e1; color: #a8a8a8;'"
       >{{ reversedLayers.length - i }}</span>
 
       <!-- Icon / text thumb -->

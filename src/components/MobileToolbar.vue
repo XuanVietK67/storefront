@@ -8,8 +8,8 @@
       :key="item.key"
       class="relative flex flex-col items-center gap-[2px] px-[9px] py-[7px] rounded-[9px] flex-shrink-0 min-w-[56px] cursor-pointer text-[9px] font-syne font-bold uppercase tracking-[.04em] transition-all duration-200 overflow-hidden"
       :style="activePanel === item.panelId
-        ? 'background: linear-gradient(135deg, #f7d44c, #e8a800); border: 1px solid transparent; color: #0f0e0c; box-shadow: 0 2px 12px rgba(245,200,66,0.4);'
-        : 'background: #f3f1ec; border: 1px solid #e8e5df; color: #a09d99;'"
+        ? 'background: #1a1a1a; border: 1px solid transparent; color: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.14);'
+        : 'background: #f1f1f1; border: 1px solid #d9d9d9; color: #a8a8a8;'"
       @click="$emit('toggle', item.panelId)"
     >
       <span class="text-[19px] leading-[1.1]">{{ item.icon }}</span>

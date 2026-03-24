@@ -7,7 +7,7 @@
       <div
         v-if="item.divider"
         class="w-8 flex-shrink-0 my-1"
-        style="height: 1px; background: linear-gradient(90deg, transparent, #2c2a26, transparent);"
+        style="height: 1px; background: linear-gradient(90deg, transparent, #d9d9d9, transparent);"
       />
       <button
         v-else
@@ -16,7 +16,7 @@
           ? 'text-accent'
           : 'text-faint hover:text-muted'"
         :style="activeTool === item.key
-          ? 'background: linear-gradient(145deg, rgba(245,200,66,0.22), rgba(245,200,66,0.08)); border: 1px solid rgba(245,200,66,0.35); box-shadow: 0 2px 8px rgba(245,200,66,0.12);'
+          ? 'background: rgba(0,128,96,0.08); border: 1px solid rgba(0,128,96,0.22); box-shadow: 0 2px 8px rgba(0,128,96,0.08);'
           : 'background: transparent; border: 1px solid transparent;'"
         @click="setTool(item.key!)"
       >
@@ -24,7 +24,7 @@
         <span
           v-if="activeTool === item.key"
           class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-r-full"
-          style="height: 60%; background: linear-gradient(180deg, #f7d44c, #e8a800); box-shadow: 0 0 6px rgba(245,200,66,0.6);"
+          style="height: 60%; background: linear-gradient(180deg, #008060, #00a37a); box-shadow: 0 0 6px rgba(0,128,96,0.4);"
         />
         <span class="text-[20px] leading-[1.1]">{{ item.icon }}</span>
         {{ item.label }}

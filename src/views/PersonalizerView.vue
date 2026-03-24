@@ -15,7 +15,7 @@
       <!-- Canvas area -->
       <main
         class="flex-1 min-w-0 flex flex-col items-center justify-center relative overflow-hidden"
-        style="background: radial-gradient(ellipse at 56% 36%, #edeaf8 0%, #f7f6f3 68%)"
+        style="background: radial-gradient(ellipse at 56% 36%, #eaf3f0 0%, #f6f6f1 68%)"
       >
         <!-- Dot grid overlay -->
         <div class="absolute inset-0 pointer-events-none canvas-dot-grid" />
@@ -23,7 +23,7 @@
         <!-- Glow -->
         <div
           class="absolute w-[400px] h-[400px] rounded-full pointer-events-none"
-          style="background: radial-gradient(circle, rgba(99,102,241,.06), transparent 68%); top:-5%; left:50%; transform:translateX(-50%)"
+          style="background: radial-gradient(circle, rgba(0,128,96,.05), transparent 68%); top:-5%; left:50%; transform:translateX(-50%)"
         />
 
         <ProductCanvas

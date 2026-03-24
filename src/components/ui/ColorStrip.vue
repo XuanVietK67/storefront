@@ -7,12 +7,12 @@
       :style="{
         background: color,
         border: modelValue === color
-          ? '2px solid rgba(245,200,66,0.9)'
-          : color === '#ffffff' ? '2px solid #383532' : '2px solid transparent',
+          ? '2px solid #008060'
+          : color === '#ffffff' ? '2px solid #d9d9d9' : '2px solid transparent',
         transform: modelValue === color ? 'scale(1.25)' : 'scale(1)',
         boxShadow: modelValue === color
-          ? '0 0 0 3px rgba(245,200,66,0.2), 0 2px 8px rgba(0,0,0,0.5)'
-          : '0 1px 3px rgba(0,0,0,0.4)',
+          ? '0 0 0 3px rgba(0,128,96,0.18), 0 2px 6px rgba(0,0,0,0.15)'
+          : '0 1px 3px rgba(0,0,0,0.12)',
       }"
       :title="color"
       @click="$emit('update:modelValue', color)"
@@ -21,7 +21,7 @@
       <span
         v-if="modelValue === color"
         class="absolute inset-0 flex items-center justify-center text-[10px] font-bold pointer-events-none"
-        :style="{ color: isLight(color) ? '#0f0e0c' : '#ffffff' }"
+        :style="{ color: isLight(color) ? '#1a1a1a' : '#ffffff' }"
       >✓</span>
     </button>
   </div>

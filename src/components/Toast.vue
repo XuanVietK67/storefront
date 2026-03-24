@@ -9,8 +9,8 @@
   >
     <div
       v-if="visible"
-      class="fixed top-[62px] left-1/2 -translate-x-1/2 font-syne font-bold text-[12px] tracking-wide text-app px-4 py-[7px] rounded-[30px] z-[9999] whitespace-nowrap pointer-events-none"
-      style="background: linear-gradient(135deg, #f7d44c, #e8a800); box-shadow: 0 4px 24px rgba(245,200,66,0.5), 0 2px 8px rgba(0,0,0,0.4);"
+      class="fixed top-[62px] left-1/2 -translate-x-1/2 font-dm font-semibold text-[13px] tracking-normal text-white px-4 py-[7px] rounded-[8px] z-[9999] whitespace-nowrap pointer-events-none"
+      style="background: #1a1a1a; box-shadow: 0 4px 16px rgba(0,0,0,0.20), 0 2px 6px rgba(0,0,0,0.12);"
     >
       {{ message }}
     </div>

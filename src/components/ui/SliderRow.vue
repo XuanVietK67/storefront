@@ -11,7 +11,7 @@
     />
     <span
       class="text-[11px] font-syne font-bold w-9 text-right flex-shrink-0"
-      style="background: linear-gradient(135deg, #f7d44c, #e8a800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+      style="color: #008060;"
     >
       {{ displayValue }}
     </span>
