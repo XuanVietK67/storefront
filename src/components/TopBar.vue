@@ -1,7 +1,7 @@
 <template>
   <header
     class="flex-shrink-0 h-[54px] flex items-center px-[14px] gap-[10px] z-[200] flex-shrink-0"
-    style="background: linear-gradient(180deg, #1e1c18 0%, #191714 100%); border-bottom: 1px solid #2c2a26; box-shadow: 0 1px 0 rgba(255,255,255,0.04);"
+    style="background: #ffffff; border-bottom: 1px solid #e8e5df; box-shadow: 0 1px 8px rgba(0,0,0,0.06);"
   >
     <!-- Logo -->
     <div class="font-syne text-[17px] font-extrabold tracking-[-0.04em] whitespace-nowrap flex-shrink-0 text-fore">
@@ -16,7 +16,7 @@
       <span class="text-faint text-xs">›</span>
       <span
         class="text-[11px] font-syne font-semibold tracking-wide text-muted overflow-hidden text-ellipsis whitespace-nowrap px-2 py-[3px] rounded-md"
-        style="background: rgba(245,200,66,0.06); border: 1px solid rgba(245,200,66,0.12);"
+        style="background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.22);"
       >
         Classic Canvas Tote — Natural
       </span>
@@ -30,7 +30,7 @@
 
       <button
         class="group w-[34px] h-[34px] rounded-lg flex items-center justify-center cursor-pointer text-[15px] select-none transition-all duration-150 flex-shrink-0"
-        style="background: #211f1b; border: 1px solid #383532; color: #8a8680;"
+        style="background: #f3f1ec; border: 1px solid #d8d5cf; color: #706d69;"
         title="Undo (Ctrl+Z)"
         @click="undo"
         @mouseenter="(e) => applyHover(e, false)"
@@ -39,7 +39,7 @@
 
       <button
         class="group w-[34px] h-[34px] rounded-lg flex items-center justify-center cursor-pointer text-[15px] select-none transition-all duration-150 flex-shrink-0"
-        style="background: #211f1b; border: 1px solid #383532; color: #8a8680;"
+        style="background: #f3f1ec; border: 1px solid #d8d5cf; color: #706d69;"
         title="Redo (Ctrl+Y)"
         @click="redo"
         @mouseenter="(e) => applyHover(e, false)"
@@ -48,7 +48,7 @@
 
       <button
         class="w-[34px] h-[34px] rounded-lg flex items-center justify-center cursor-pointer text-[15px] select-none transition-all duration-150 flex-shrink-0 hover:!border-danger/40 hover:!bg-danger/10 hover:!text-danger active:scale-90"
-        style="background: #211f1b; border: 1px solid #383532; color: #8a8680;"
+        style="background: #f3f1ec; border: 1px solid #d8d5cf; color: #706d69;"
         title="Clear all"
         @click="doClear"
       >🗑</button>
@@ -63,12 +63,12 @@ const { undo, redo, doClear } = useCanvas()
 
 function applyHover(e: MouseEvent, _danger: boolean): void {
   const btn = e.currentTarget as HTMLElement
-  btn.style.background = '#2a2824'
-  btn.style.color = '#f0ede6'
+  btn.style.background = '#ece9e3'
+  btn.style.color = '#1a1916'
 }
 function removeHover(e: MouseEvent): void {
   const btn = e.currentTarget as HTMLElement
-  btn.style.background = '#211f1b'
-  btn.style.color = '#8a8680'
+  btn.style.background = '#f3f1ec'
+  btn.style.color = '#706d69'
 }
 </script>
