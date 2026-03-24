@@ -40,9 +40,10 @@ const overrideColor = ref<string>('#1a1a1a')
 
 watch(selectedEl, el => {
   if (!el) return
-  sizeVal.value = Math.round((el.scale   ?? 1) * 100)
-  rotVal.value  = Math.round( el.rotation ?? 0)
-  opVal.value   = Math.round((el.opacity  ?? 1) * 100)
+  sizeVal.value       = Math.round((el.scale   ?? 1) * 100)
+  rotVal.value        = Math.round( el.rotation ?? 0)
+  opVal.value         = Math.round((el.opacity  ?? 1) * 100)
+  overrideColor.value = el.color || '#1a1a1a'
 }, { immediate: true })
 
 watch(sizeVal,       v => { if (selectedEl.value) updateEl(selectedEl.value.id, { scale: v / 100 }) })

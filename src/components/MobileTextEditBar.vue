@@ -36,6 +36,36 @@
       <div class="flex flex-col gap-[5px] flex-shrink-0 pr-3">
         <span class="text-[9px] font-syne font-bold tracking-[.08em] uppercase text-faint">Color</span>
         <div class="flex items-center gap-[5px]">
+
+          <!-- Native color picker trigger -->
+          <label class="relative flex-shrink-0 cursor-pointer group" title="Pick any color">
+            <span
+              class="block w-[28px] h-[28px] rounded-[6px] transition-all duration-100 group-hover:scale-110"
+              :style="{
+                background: editColor,
+                border:     isColorPreset ? '2px dashed #008060' : '2px solid #008060',
+                boxShadow:  isColorPreset
+                  ? '0 0 0 2px rgba(0,128,96,0.15), 0 1px 3px rgba(0,0,0,0.10)'
+                  : '0 0 0 2px rgba(0,128,96,0.25)',
+              }"
+            >
+              <span
+                class="absolute inset-0 flex items-center justify-center text-[9px] pointer-events-none transition-opacity"
+                :style="{
+                  color:   isColorLight(editColor) ? '#1a1a1a' : '#ffffff',
+                  opacity: isColorPreset ? '0.55' : '1',
+                }"
+              >✎</span>
+            </span>
+            <input
+              type="color"
+              :value="editColor"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              @input="setColor(($event.target as HTMLInputElement).value)"
+            />
+          </label>
+
+          <!-- Preset swatches -->
           <button
             v-for="c in COLORS"
             :key="c"
@@ -54,19 +84,9 @@
       <div class="flex-shrink-0 w-px self-stretch mx-2" style="background:#d9d9d9;" />
 
       <!-- ── FONT FAMILY ── -->
-      <div class="flex flex-col gap-[5px] flex-shrink-0 px-1">
+      <div class="flex flex-col gap-[5px] flex-shrink-0 px-1" style="width: 148px;">
         <span class="text-[9px] font-syne font-bold tracking-[.08em] uppercase text-faint">Font</span>
-        <div class="flex items-center gap-[4px]">
-          <button
-            v-for="font in FONTS"
-            :key="font"
-            class="flex-shrink-0 h-[28px] px-[9px] rounded-[6px] text-[12px] transition-all active:scale-[.94]"
-            :style="editFont === font
-              ? `font-family:${font}; background:#1a1a1a; border:1px solid transparent; color:#ffffff; font-weight:600;`
-              : `font-family:${font}; background:#f1f1f1; border:1px solid #d9d9d9; color:#6d6d6d; font-weight:400;`"
-            @click="setFont(font)"
-          >{{ fontLabel(font) }}</button>
-        </div>
+        <FontPicker :modelValue="editFont" @update:modelValue="setFont" />
       </div>
 
       <div class="flex-shrink-0 w-px self-stretch mx-2" style="background:#d9d9d9;" />
@@ -133,9 +153,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
-import { COLORS, FONTS } from '@/constants'
+import { ref, computed, watch, nextTick } from 'vue'
+import { COLORS } from '@/constants'
 import { useCanvas } from '@/composables/useCanvas'
+import FontPicker from '@/components/ui/FontPicker.vue'
 
 const { selectedEl, updateEl, removeEl, deselect, saveUndo } = useCanvas()
 
@@ -147,9 +168,15 @@ const editBold   = ref(true)
 const editShadow = ref(false)
 let   snapshotSaved = false
 
-// Abbreviate long font names to keep chips compact
-function fontLabel(f: string): string {
-  return ({ 'Courier New': 'Courier', 'DM Sans': 'DM' } as Record<string, string>)[f] ?? f
+// True when the current color is one of the presets
+const isColorPreset = computed(() => COLORS.includes(editColor.value))
+
+function isColorLight(hex: string): boolean {
+  if (!hex || hex.length < 7) return true
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return (r * 299 + g * 587 + b * 114) / 1000 > 128
 }
 
 // Sync all local state when a text element is selected

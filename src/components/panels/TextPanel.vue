@@ -45,26 +45,52 @@
     <p class="font-syne text-[9px] font-bold tracking-[.1em] uppercase text-faint">Color</p>
     <ColorStrip v-model="color" />
 
-    <p class="font-syne text-[9px] font-bold tracking-[.1em] uppercase text-faint">Font</p>
-    <FontChips v-model="font" />
+    <p class="font-syne text-[9px] font-bold tracking-[.1em] uppercase text-faint">Font families</p>
+    <FontPicker v-model="font" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import ColorStrip from '@/components/ui/ColorStrip.vue'
-import FontChips  from '@/components/ui/FontChips.vue'
+import FontPicker from '@/components/ui/FontPicker.vue'
 import { useCanvas } from '@/composables/useCanvas'
 
-const { addText, curColor, curFont } = useCanvas()
+const { addText, curColor, curFont, selectedEl, updateEl, saveUndo } = useCanvas()
 
-const textInput = ref<string>('')
-const color     = ref<string>(curColor.value)
-const font      = ref<string>(curFont.value)
-const hovered   = ref<boolean>(false)
+const textInput     = ref<string>('')
+const color         = ref<string>(curColor.value)
+const font          = ref<string>(curFont.value)
+const hovered       = ref<boolean>(false)
+let   snapshotSaved = false
 
-watch(color, v => { curColor.value = v })
-watch(font,  v => { curFont.value  = v })
+// Sync strip to the selected text element's current values
+watch(selectedEl, el => {
+  if (el?.type === 'text') {
+    color.value = el.color
+    font.value  = el.fontFamily || curFont.value
+  }
+  snapshotSaved = false
+}, { immediate: true })
+
+function ensureSnapshot(): void {
+  if (!snapshotSaved) { saveUndo(); snapshotSaved = true }
+}
+
+watch(color, v => {
+  curColor.value = v
+  if (selectedEl.value?.type === 'text') {
+    ensureSnapshot()
+    updateEl(selectedEl.value.id, { color: v })
+  }
+})
+watch(font, v => {
+  curFont.value = v
+  if (selectedEl.value?.type === 'text') {
+    ensureSnapshot()
+    updateEl(selectedEl.value.id, { fontFamily: v })
+  }
+})
 
 function submit(): void {
   addText(textInput.value)

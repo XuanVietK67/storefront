@@ -26,9 +26,7 @@
           >Add</button>
         </div>
         <ColorStrip v-model="mobColor" />
-        <div class="overflow-x-auto scrollbar-none">
-          <FontChips v-model="mobFont" />
-        </div>
+        <FontPicker v-model="mobFont" />
       </div>
     </div>
 
@@ -123,7 +121,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import ColorStrip from "@/components/ui/ColorStrip.vue";
-import FontChips  from "@/components/ui/FontChips.vue";
+import FontPicker from "@/components/ui/FontPicker.vue";
 import EmojiGrid  from "@/components/ui/EmojiGrid.vue";
 import SliderRow  from "@/components/ui/SliderRow.vue";
 import { STICKERS, ICONS, PRESETS } from "@/constants";
