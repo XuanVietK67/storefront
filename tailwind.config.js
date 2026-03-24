@@ -7,18 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        app:      '#f6f6f1',
+        app:      '#f5f7ff',
         surface:  '#ffffff',
-        surface2: '#f1f1f1',
-        surface3: '#e8e8e1',
-        line:     '#d9d9d9',
-        line2:    '#c4c4c4',
+        surface2: '#ffffff',
+        surface3: '#f1f5f9',
+        line:     '#e2e8f0',
+        line2:    '#cbd5e1',
         accent:   '#008060',
         'accent-dim': 'rgba(0,128,96,0.10)',
         danger:   '#d72c0d',
-        fore:     '#1a1a1a',
-        muted:    '#6d6d6d',
-        faint:    '#a8a8a8',
+        fore:     '#0f172a',
+        muted:    '#64748b',
+        faint:    '#94a3b8',
       },
       fontFamily: {
         syne: ['Syne', 'sans-serif'],

@@ -15,7 +15,7 @@
       <!-- Canvas area -->
       <main
         class="flex-1 min-w-0 flex flex-col items-center justify-center relative overflow-hidden"
-        style="background: radial-gradient(ellipse at 56% 36%, #eaf3f0 0%, #f6f6f1 68%)"
+        style="background: radial-gradient(ellipse at 56% 36%, #e8eeff 0%, #f5f7ff 68%)"
       >
         <!-- Dot grid overlay -->
         <div class="absolute inset-0 pointer-events-none canvas-dot-grid" />
@@ -23,7 +23,7 @@
         <!-- Glow -->
         <div
           class="absolute w-[400px] h-[400px] rounded-full pointer-events-none"
-          style="background: radial-gradient(circle, rgba(0,128,96,.05), transparent 68%); top:-5%; left:50%; transform:translateX(-50%)"
+          style="background: radial-gradient(circle, rgba(99,102,241,.07), transparent 68%); top:-5%; left:50%; transform:translateX(-50%)"
         />
 
         <ProductCanvas
@@ -63,14 +63,16 @@
 
     </div>
 
-    <!-- Mobile toolbar -->
+    <!-- Mobile: inline text editor replaces toolbar when a text element is selected -->
+    <MobileTextEditBar v-if="selectedEl?.type === 'text'" />
     <MobileToolbar
+      v-else
       :activePanel="activeMobPanel"
       @toggle="toggleMobPanel"
     />
 
-    <!-- Mobile panels -->
-    <MobilePanels :activePanel="activeMobPanel" />
+    <!-- Mobile panels: hidden while text editing to keep the layout uncluttered -->
+    <MobilePanels v-if="selectedEl?.type !== 'text'" :activePanel="activeMobPanel" />
 
     <!-- Mobile CTA -->
     <MobileCta />
@@ -88,15 +90,16 @@ import TopBar        from '@/components/TopBar.vue'
 import Sidebar       from '@/components/Sidebar.vue'
 import ProductCanvas from '@/components/canvas/ProductCanvas.vue'
 import RightPanel    from '@/components/RightPanel.vue'
-import MobileToolbar from '@/components/MobileToolbar.vue'
-import MobilePanels  from '@/components/MobilePanels.vue'
+import MobileToolbar    from '@/components/MobileToolbar.vue'
+import MobileTextEditBar from '@/components/MobileTextEditBar.vue'
+import MobilePanels      from '@/components/MobilePanels.vue'
 import MobileCta     from '@/components/MobileCta.vue'
 import Toast         from '@/components/Toast.vue'
 
 import { useCanvas } from '@/composables/useCanvas'
 
 const {
-  elements, selectedId, canvasScale,
+  elements, selectedId, selectedEl, canvasScale,
   selectEl, deselect, removeEl, updateEl,
   addSticker, undo, redo, doClear, zoom,
 } = useCanvas()

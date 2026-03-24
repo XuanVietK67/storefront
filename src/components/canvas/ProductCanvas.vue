@@ -8,14 +8,14 @@
     }"
   >
     <!-- Layer count badge -->
-    <div
+    <!-- <div
       class="absolute -top-[13px] left-0 rounded-[20px] px-[10px] py-[2px] text-[9px] font-syne font-bold border backdrop-blur-sm pointer-events-none transition-all duration-200 z-[5]"
       :class="elements.length
         ? 'text-accent border-accent/[.28] bg-app/90'
         : 'text-faint border-line bg-app/90'"
     >
       {{ elements.length }} {{ elements.length === 1 ? 'layer' : 'layers' }}
-    </div>
+    </div> -->
 
     <!-- Canvas inner (scaled for zoom) -->
     <div

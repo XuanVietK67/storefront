@@ -27,8 +27,13 @@
     <!-- Content -->
     <span
       v-if="element.type === 'text'"
-      class="font-syne text-[20px] font-bold whitespace-nowrap py-[2px] px-1 rounded-[3px] leading-[1.25]"
-      :style="{ color: element.color, fontFamily: element.fontFamily }"
+      class="text-[20px] whitespace-nowrap py-[2px] px-1 rounded-[3px] leading-[1.25]"
+      :style="{
+        color:      element.color,
+        fontFamily: element.fontFamily,
+        fontWeight: element.bold === false ? '400' : '700',
+        textShadow: element.shadow ? '2px 3px 6px rgba(0,0,0,0.45)' : 'none',
+      }"
     >{{ element.content }}</span>
 
     <span

@@ -9,6 +9,8 @@ export interface CanvasElement {
   scale: number
   rotation: number
   opacity: number
+  bold?: boolean
+  shadow?: boolean
 }
 
 export interface UploadSource {
