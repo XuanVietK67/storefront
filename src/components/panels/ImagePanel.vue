@@ -6,7 +6,7 @@
         v-for="src in sources"
         :key="src.label"
         class="group flex flex-col items-center gap-[5px] py-3 px-1 rounded-[10px] cursor-pointer text-center transition-all duration-200 active:scale-[.94]"
-        style="background: #211f1b; border: 1px dashed #383532;"
+        style="background: #f1f1f1; border: 1px dashed #c4c4c4;"
         @mouseenter="(e) => cardHover(e, true)"
         @mouseleave="(e) => cardHover(e, false)"
         @click="showToast(src.toast)"
@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <div class="h-px" style="background: linear-gradient(90deg, transparent, #2c2a26, transparent);" />
+    <div class="h-px" style="background: linear-gradient(90deg, transparent, #d9d9d9, transparent);" />
 
     <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Quick Add</p>
     <EmojiGrid :items="PRESETS" :inline="false" @pick="addSticker" />
@@ -41,8 +41,8 @@ const sources = [
 
 function cardHover(e: MouseEvent, on: boolean): void {
   const btn = e.currentTarget as HTMLElement
-  btn.style.borderColor = on ? 'rgba(245,200,66,0.4)' : '#383532'
-  btn.style.background  = on ? 'rgba(245,200,66,0.06)' : '#211f1b'
-  btn.style.boxShadow   = on ? '0 0 14px rgba(245,200,66,0.1)' : 'none'
+  btn.style.borderColor = on ? 'rgba(0,128,96,0.35)' : '#c4c4c4'
+  btn.style.background  = on ? 'rgba(0,128,96,0.06)' : '#f1f1f1'
+  btn.style.boxShadow   = on ? '0 2px 10px rgba(0,128,96,0.10)' : 'none'
 }
 </script>

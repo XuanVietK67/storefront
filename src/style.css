@@ -16,8 +16,8 @@
   }
 
   body {
-    background-color: #f7f6f3;
-    color: #1a1916;
+    background-color: #f6f6f1;
+    color: #1a1a1a;
     font-family: 'DM Sans', sans-serif;
     font-size: 14px;
     line-height: 1.5;
@@ -26,7 +26,7 @@
   input[type="range"] {
     -webkit-appearance: none;
     height: 3px;
-    background: #d8d5cf;
+    background: #d9d9d9;
     border-radius: 2px;
     outline: none;
     cursor: pointer;
@@ -36,11 +36,11 @@
     -webkit-appearance: none;
     width: 15px;
     height: 15px;
-    background: #f5c842;
+    background: #008060;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid #ffffff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    box-shadow: 0 1px 4px rgba(0,128,96,0.30);
   }
 
   ::-webkit-scrollbar {
@@ -48,7 +48,7 @@
     height: 4px;
   }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #d8d5cf; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: #c4c4c4; border-radius: 4px; }
 }
 
 @layer utilities {
@@ -61,25 +61,25 @@
   .canvas-dot-grid {
     background-image: radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px);
     background-size: 28px 28px;
-    opacity: 0.6;
+    opacity: 0.5;
   }
   .safe-pb {
     padding-bottom: calc(13px + env(safe-area-inset-bottom, 0px));
   }
 }
 
-/* Polaris variable overrides for light theme */
+/* Polaris variable overrides for Shopify-style light theme */
 :root {
-  --p-color-bg: #f7f6f3;
+  --p-color-bg: #f6f6f1;
   --p-color-bg-surface: #ffffff;
-  --p-color-bg-surface-hover: #f3f1ec;
-  --p-color-bg-interactive: #f5c842;
-  --p-color-bg-interactive-hover: #f7d25a;
-  --p-color-text: #1a1916;
-  --p-color-text-interactive: #b08800;
-  --p-color-border: #e8e5df;
-  --p-color-border-hover: #d8d5cf;
-  --p-color-input-bg-surface: #f3f1ec;
+  --p-color-bg-surface-hover: #f1f1f1;
+  --p-color-bg-interactive: #008060;
+  --p-color-bg-interactive-hover: #00956f;
+  --p-color-text: #1a1a1a;
+  --p-color-text-interactive: #008060;
+  --p-color-border: #d9d9d9;
+  --p-color-border-hover: #c4c4c4;
+  --p-color-input-bg-surface: #f1f1f1;
   --p-border-radius-2: 9px;
   --p-border-radius-3: 13px;
   --p-font-family-sans: 'DM Sans', sans-serif;
@@ -87,30 +87,30 @@
 
 /* Polaris button resets for primary variant */
 .Polaris-Button--primary {
-  background: #f5c842 !important;
-  color: #1a1916 !important;
+  background: #008060 !important;
+  color: #ffffff !important;
   border: none !important;
-  font-family: 'Syne', sans-serif !important;
-  font-weight: 800 !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-weight: 600 !important;
 }
 .Polaris-Button--primary:hover {
-  filter: brightness(1.05);
+  background: #00956f !important;
 }
 
 /* Polaris text field input */
 .Polaris-TextField__Input {
-  background: #f3f1ec !important;
-  color: #1a1916 !important;
+  background: #f1f1f1 !important;
+  color: #1a1a1a !important;
   font-family: 'DM Sans', sans-serif !important;
 }
 .Polaris-TextField__Backdrop {
-  background: #f3f1ec !important;
-  border-color: #e8e5df !important;
+  background: #f1f1f1 !important;
+  border-color: #d9d9d9 !important;
 }
 .Polaris-TextField:focus-within .Polaris-TextField__Backdrop {
-  border-color: #f5c842 !important;
-  box-shadow: 0 0 0 2px rgba(245,200,66,0.22) !important;
+  border-color: #008060 !important;
+  box-shadow: 0 0 0 2px rgba(0,128,96,0.18) !important;
 }
 .Polaris-TextField__Input::placeholder {
-  color: #a09d99 !important;
+  color: #a8a8a8 !important;
 }

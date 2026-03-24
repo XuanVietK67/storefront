@@ -13,7 +13,7 @@
           placeholder="Type something…"
           maxlength="28"
           autocomplete="off"
-          class="w-full bg-surface2 border border-line rounded-sm pl-3 pr-14 py-[10px] text-sm text-fore placeholder:text-faint outline-none transition-all duration-150 focus:border-accent focus:bg-surface3 focus:shadow-[0_0_0_3px_rgba(245,200,66,0.12)]"
+          class="w-full bg-surface2 border border-line rounded-sm pl-3 pr-14 py-[10px] text-sm text-fore placeholder:text-faint outline-none transition-all duration-150 focus:border-accent focus:bg-surface3 focus:shadow-[0_0_0_3px_rgba(0,128,96,0.14)]"
           @keydown.enter="submit"
         />
         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-syne tracking-wider text-faint border border-line rounded px-[5px] py-[2px] pointer-events-none select-none">
@@ -23,8 +23,8 @@
 
       <!-- Add to Canvas button -->
       <button
-        class="group relative w-full h-[46px] rounded-[10px] font-syne font-extrabold text-[13px] tracking-wide text-app flex items-center justify-center gap-2 overflow-hidden transition-all duration-200 active:scale-[.97]"
-        style="background: linear-gradient(135deg, #f7d44c 0%, #f5c842 45%, #e8a800 100%); box-shadow: 0 4px 20px rgba(245,200,66,0.35), 0 1px 4px rgba(0,0,0,0.4);"
+        class="group relative w-full h-[46px] rounded-[10px] font-dm font-semibold text-[14px] tracking-normal text-white flex items-center justify-center gap-2 overflow-hidden transition-all duration-200 hover:bg-[#2a2a2a] active:scale-[.97]"
+        style="background: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.12);"
         @click="submit"
         @mouseenter="hovered = true"
         @mouseleave="hovered = false"

@@ -3,7 +3,7 @@
 
     <!-- Transform card -->
     <div class="rounded-[10px] p-3 flex flex-col gap-[10px]"
-         style="background: #f3f1ec; border: 1px solid #e8e5df; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+         style="background: #f1f1f1; border: 1px solid #d9d9d9; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
       <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Transform</p>
       <SliderRow label="Size"    :min="25"  :max="400" v-model="sizeVal" :displayValue="Math.round(sizeVal) + '%'" />
       <SliderRow label="Rotate"  :min="0"   :max="360" v-model="rotVal"  :displayValue="Math.round(rotVal) + '°'" />
