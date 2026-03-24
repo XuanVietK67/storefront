@@ -1,14 +1,14 @@
 <template>
   <div
     class="flex md:hidden flex-shrink-0 items-center gap-2 px-3 safe-pb"
-    style="background: #0f0e0c; border-top: 1px solid #2c2a26; padding-top: 10px;"
+    style="background: #ffffff; border-top: 1px solid #e8e5df; padding-top: 10px; box-shadow: 0 -2px 12px rgba(0,0,0,0.05);"
   >
     <!-- Preview button (glass style) -->
     <button
       class="flex-shrink-0 h-[46px] px-4 rounded-[10px] font-syne font-semibold text-[12px] tracking-wide transition-all duration-150 active:scale-[.97]"
-      style="background: rgba(255,255,255,0.06); border: 1px solid #383532; color: #8a8680; backdrop-filter: blur(8px);"
-      @mouseenter="(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#4a4845'; (e.currentTarget as HTMLElement).style.color = '#f0ede6'; }"
-      @mouseleave="(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#383532'; (e.currentTarget as HTMLElement).style.color = '#8a8680'; }"
+      style="background: #f3f1ec; border: 1px solid #d8d5cf; color: #706d69;"
+      @mouseenter="(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#a09d99'; (e.currentTarget as HTMLElement).style.color = '#1a1916'; }"
+      @mouseleave="(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#d8d5cf'; (e.currentTarget as HTMLElement).style.color = '#706d69'; }"
       @click="showToast('👀 Preview')"
     >
       Preview

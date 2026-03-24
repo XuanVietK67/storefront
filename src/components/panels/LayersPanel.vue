@@ -6,7 +6,7 @@
     <div
       v-if="!reversedLayers.length"
       class="rounded-[10px] py-6 flex flex-col items-center gap-2"
-      style="background: #211f1b; border: 1px dashed #383532;"
+      style="background: #f3f1ec; border: 1px dashed #d8d5cf;"
     >
       <span class="text-[28px]">◧</span>
       <p class="text-[11px] font-syne text-faint text-center">No layers yet<br>Add something to get started</p>
@@ -18,16 +18,16 @@
       :key="el.id"
       class="group flex items-center gap-2 px-[10px] py-[8px] rounded-[9px] cursor-pointer transition-all duration-150"
       :style="selectedId === el.id
-        ? 'background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.35); box-shadow: 0 0 12px rgba(245,200,66,0.08);'
-        : 'background: #211f1b; border: 1px solid #2c2a26;'"
+        ? 'background: rgba(245,200,66,0.12); border: 1px solid rgba(245,200,66,0.40); box-shadow: 0 2px 8px rgba(245,200,66,0.10);'
+        : 'background: #f3f1ec; border: 1px solid #e8e5df;'"
       @click="selectEl(el.id)"
     >
       <!-- Layer number badge -->
       <span
         class="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-syne font-bold"
         :style="selectedId === el.id
-          ? 'background: rgba(245,200,66,0.2); color: #f5c842;'
-          : 'background: #2a2824; color: #8a8680;'"
+          ? 'background: rgba(245,200,66,0.2); color: #b08800;'
+          : 'background: #ece9e3; color: #a09d99;'"
       >{{ reversedLayers.length - i }}</span>
 
       <!-- Icon / text thumb -->
@@ -38,7 +38,7 @@
       <!-- Name -->
       <span
         class="flex-1 text-xs font-syne font-medium"
-        :style="selectedId === el.id ? 'color: #f0ede6;' : 'color: #8a8680;'"
+        :style="selectedId === el.id ? 'color: #1a1916;' : 'color: #706d69;'"
       >
         {{ capitalize(el.type) }}
       </span>

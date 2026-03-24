@@ -1,7 +1,7 @@
 <template>
   <nav
     class="flex-shrink-0 w-[66px] flex flex-col items-center py-[10px] pb-[14px] gap-[2px] overflow-y-auto scrollbar-none"
-    style="background: linear-gradient(180deg, #1e1c18 0%, #191714 100%); border-right: 1px solid #2c2a26;"
+    style="background: #ffffff; border-right: 1px solid #e8e5df; box-shadow: 2px 0 8px rgba(0,0,0,0.04);"
   >
     <template v-for="item in tools" :key="item.key ?? 'div'">
       <div
@@ -16,7 +16,7 @@
           ? 'text-accent'
           : 'text-faint hover:text-muted'"
         :style="activeTool === item.key
-          ? 'background: linear-gradient(145deg, rgba(245,200,66,0.18), rgba(245,200,66,0.06)); border: 1px solid rgba(245,200,66,0.25); box-shadow: 0 0 12px rgba(245,200,66,0.08) inset;'
+          ? 'background: linear-gradient(145deg, rgba(245,200,66,0.22), rgba(245,200,66,0.08)); border: 1px solid rgba(245,200,66,0.35); box-shadow: 0 2px 8px rgba(245,200,66,0.12);'
           : 'background: transparent; border: 1px solid transparent;'"
         @click="setTool(item.key!)"
       >

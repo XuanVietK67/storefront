@@ -1,17 +1,17 @@
 <template>
   <aside
     class="flex-shrink-0 w-[268px] flex flex-col overflow-hidden"
-    style="background: linear-gradient(180deg, #1e1c18 0%, #191714 100%); border-left: 1px solid #2c2a26;"
+    style="background: #ffffff; border-left: 1px solid #e8e5df; box-shadow: -2px 0 8px rgba(0,0,0,0.04);"
   >
     <!-- Header -->
     <div
       class="px-4 pt-[14px] pb-[11px] flex-shrink-0"
-      style="border-bottom: 1px solid #2c2a26; background: linear-gradient(180deg, rgba(245,200,66,0.04) 0%, transparent 100%);"
+      style="border-bottom: 1px solid #e8e5df; background: linear-gradient(180deg, rgba(245,200,66,0.06) 0%, transparent 100%);"
     >
       <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint mb-[3px]">Design Tools</p>
       <h2
         class="font-syne text-[16px] font-extrabold tracking-[-0.03em] leading-tight"
-        style="background: linear-gradient(135deg, #f0ede6 30%, #a09a90); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+        style="background: linear-gradient(135deg, #1a1916 30%, #706d69); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
       >
         {{ TOOL_NAMES[activeTool] || activeTool }}
       </h2>
@@ -30,7 +30,7 @@
     <!-- Cart CTA -->
     <div
       class="px-4 pt-[14px] safe-pb flex-shrink-0"
-      style="border-top: 1px solid #2c2a26; background: linear-gradient(0deg, rgba(245,200,66,0.04) 0%, transparent 100%);"
+      style="border-top: 1px solid #e8e5df; background: linear-gradient(0deg, rgba(245,200,66,0.06) 0%, transparent 100%);"
     >
       <!-- Price row -->
       <div class="flex items-end justify-between mb-3">
@@ -38,7 +38,7 @@
         <div class="text-right">
           <span
             class="font-syne text-[22px] font-extrabold tracking-[-0.04em] leading-none"
-            style="background: linear-gradient(135deg, #f0ede6, #c8c4bc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+            style="background: linear-gradient(135deg, #1a1916, #706d69); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
           >$34.99</span>
           <span class="block text-[10px] text-faint font-syne tracking-wide">+ personalization</span>
         </div>

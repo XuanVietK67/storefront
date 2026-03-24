@@ -4,7 +4,7 @@
     :style="{
       width:  canvasWidth + 'px',
       height: canvasHeight + 'px',
-      boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 44px 120px rgba(0,0,0,.85), 0 0 100px rgba(245,200,66,.05)',
+      boxShadow: '0 0 0 1px rgba(0,0,0,.06), 0 24px 80px rgba(0,0,0,.14), 0 8px 24px rgba(0,0,0,.08)',
     }"
   >
     <!-- Layer count badge -->

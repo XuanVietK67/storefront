@@ -15,7 +15,7 @@
       <!-- Canvas area -->
       <main
         class="flex-1 min-w-0 flex flex-col items-center justify-center relative overflow-hidden"
-        style="background: radial-gradient(ellipse at 56% 36%, #1e1b17 0%, #0f0e0c 68%)"
+        style="background: radial-gradient(ellipse at 56% 36%, #edeaf8 0%, #f7f6f3 68%)"
       >
         <!-- Dot grid overlay -->
         <div class="absolute inset-0 pointer-events-none canvas-dot-grid" />
@@ -23,7 +23,7 @@
         <!-- Glow -->
         <div
           class="absolute w-[400px] h-[400px] rounded-full pointer-events-none"
-          style="background: radial-gradient(circle, rgba(245,200,66,.055), transparent 68%); top:-5%; left:50%; transform:translateX(-50%)"
+          style="background: radial-gradient(circle, rgba(99,102,241,.06), transparent 68%); top:-5%; left:50%; transform:translateX(-50%)"
         />
 
         <ProductCanvas
@@ -42,14 +42,14 @@
         <!-- Zoom controls (tablet/desktop) -->
         <div class="absolute bottom-[18px] right-[18px] hidden md:flex flex-col items-center gap-[3px]">
           <button
-            class="w-[30px] h-[30px] rounded-[7px] border border-line2 bg-[rgba(18,17,14,.92)] text-muted text-[15px] flex items-center justify-center cursor-pointer backdrop-blur-[10px] transition-all hover:text-fore hover:bg-surface2"
+            class="w-[30px] h-[30px] rounded-[7px] border border-line2 bg-[rgba(255,255,255,0.92)] text-muted text-[15px] flex items-center justify-center cursor-pointer backdrop-blur-[10px] transition-all hover:text-fore hover:bg-surface shadow-sm"
             @click="zoom(1.15)"
           >+</button>
           <span class="text-[9px] font-syne text-faint tracking-[.05em]">
             {{ Math.round(canvasScale * 100) }}%
           </span>
           <button
-            class="w-[30px] h-[30px] rounded-[7px] border border-line2 bg-[rgba(18,17,14,.92)] text-muted text-[15px] flex items-center justify-center cursor-pointer backdrop-blur-[10px] transition-all hover:text-fore hover:bg-surface2"
+            class="w-[30px] h-[30px] rounded-[7px] border border-line2 bg-[rgba(255,255,255,0.92)] text-muted text-[15px] flex items-center justify-center cursor-pointer backdrop-blur-[10px] transition-all hover:text-fore hover:bg-surface shadow-sm"
             @click="zoom(1 / 1.15)"
           >−</button>
         </div>
