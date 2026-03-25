@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working in this repository.
 
 ## Project Overview
 
@@ -8,69 +8,66 @@ CustomMaker is a single-page bag personalizer. Users place text, stickers, and i
 
 ## Tech Stack
 
-- **Vue 3** (Composition API, `<script setup>`) + **TypeScript**
-- **Vite** — build and dev server
-- **Tailwind CSS v3** — utility-first styling with custom design tokens; no CSS modules, all styling is inline Tailwind or inline `style` attributes
-- **@ownego/polaris-vue** — UI component library (listed as dependency, minimal direct use)
+- **Vue 3** (Composition API, `<script setup>`) + **TypeScript 5.4**
+- **Vite 5** — build and dev server; `@` resolves to `src/` (`vite.config.js:8`)
+- **Tailwind CSS v3** — all styling is inline Tailwind classes or inline `style` attributes; no CSS modules
+- **@ownego/polaris-vue** — listed as dependency, minimal direct use
 
 ## Key Directories
 
-| Path                     | Purpose                                                                  |
-| ------------------------ | ------------------------------------------------------------------------ |
-| `src/views/`             | Single route view (`PersonalizerView.vue`) — root layout                 |
-| `src/components/canvas/` | Canvas rendering: bag SVG, draggable elements                            |
-| `src/components/panels/` | Tool panels: Text, Image, Sticker, Icon, Adjust, Layers                  |
-| `src/components/ui/`     | Reusable primitives: ColorStrip, FontChips, SliderRow, EmojiGrid         |
-| `src/composables/`       | Shared state and logic: `useCanvas`, `useHistory`, `useToast`, `useDrag` |
-| `src/types/index.ts`     | All shared TypeScript interfaces (`CanvasElement`, `SidebarItem`, etc.)  |
-| `src/constants/index.ts` | Static data: STICKERS, ICONS, FONTS, COLORS, CANVAS_SIZE, TOOL_NAMES     |
+| Path | Purpose |
+| --- | --- |
+| `src/views/PersonalizerView.vue` | Root layout — mounts desktop + mobile trees, keyboard shortcuts |
+| `src/components/canvas/` | `ProductCanvas.vue` (scaling), `DraggableElement.vue` (render + drag), `BagSvg.vue` |
+| `src/components/panels/` | Tool panels: Text, Image, Sticker, Icon, Adjust, Layers |
+| `src/components/ui/` | Reusable primitives: ColorStrip, FontPicker, SliderRow, EmojiGrid |
+| `src/composables/` | Singleton state: `useCanvas`, `useHistory`, `useToast`, `useDrag` |
+| `src/types/index.ts` | All shared TypeScript interfaces (`CanvasElement`, `SidebarItem`, …) |
+| `src/constants/index.ts` | Static data: STICKERS, ICONS, FONTS, COLORS, CANVAS_SIZE, TOOL_NAMES |
 
 ## Build & Dev Commands
 
 ```bash
-npm run dev       # Vite dev server with HMR
-npm run build     # TypeScript check + production build
-npm run preview   # Serve production build locally
+npm run dev      # Vite dev server with HMR
+npm run build    # TypeScript check + production build
+npm run preview  # Serve production build locally
 ```
 
 No test runner is configured.
 
-## Path Alias
+## Branching Rules
 
-`@` resolves to `src/` — configured in `vite.config.js:8`.
+- **New features** — create a new git branch first; work there for the session.
+- **Bug fixes** — work on the `fixBug` branch only.
 
-## Adding New Features / Fixing Bugs
+## Adding a New Tool/Panel
 
-**IMPORTANT**: When you work on a new feature, create a new git branch first. Then work on changes in that branch for the reminder of the session.
+1. Add entry to `tools` array in `src/components/Sidebar.vue:42` (desktop) and mirror in `src/components/MobileToolbar.vue`.
+2. Register display name in `TOOL_NAMES` at `src/constants/index.ts`.
+3. Create panel in `src/components/panels/` — call `useCanvas()` directly for state.
+4. Mount in `src/components/RightPanel.vue:22` (desktop `v-if` chain) and `src/components/MobilePanels.vue`.
 
-When fixing bugs, only work on the `fixBug` branch.
+## Adding a New Canvas Element Type
 
-### Adding a new tool/panel
+1. Extend type union at `src/types/index.ts:3`.
+2. Add `add<Type>()` in `src/composables/useCanvas.ts` — call `saveUndo()` before pushing to `elements`.
+3. Add render branch (`v-else-if`) in `src/components/canvas/DraggableElement.vue:29`.
 
-1. Add the tool entry to the `tools` array in `src/components/Sidebar.vue:42` (desktop) and mirror it in `src/components/MobileToolbar.vue` (mobile).
-2. Register the display name in `TOOL_NAMES` at `src/constants/index.ts:23`.
-3. Create the panel component in `src/components/panels/` — call `useCanvas()` directly for state access.
-4. Mount it in both `src/components/RightPanel.vue:22` (desktop, `v-if` chain) and `src/components/MobilePanels.vue` (mobile).
+## Mutating Canvas State
 
-### Adding a new canvas element type
+- Call `saveUndo()` **before** every mutation (`src/composables/useHistory.ts`).
+- Use `updateEl(id, patch)` for partial updates — never mutate `elements` directly in components.
+- After removal, clear `selectedId` when it matches the removed element (`src/composables/useCanvas.ts:62-65`).
 
-1. Extend the `CanvasElement` type union at `src/types/index.ts:3` (`type: 'text' | 'sticker' | 'icon' | ...`).
-2. Add an `add<Type>()` function in `src/composables/useCanvas.ts` — call `saveUndo()` before pushing to `elements`.
-3. Add a render branch in `src/components/canvas/DraggableElement.vue:29` (`v-else-if` block).
+## Bug Fix Starting Points
 
-### Mutating canvas state
-
-- Always call `saveUndo()` before modifying `elements` so undo/redo stays consistent (`src/composables/useHistory.ts`).
-- Use `updateEl(id, patch)` for partial updates — never mutate `elements` directly in a component.
-- After any removal, clear `selectedId` if it matches the removed element (see `src/composables/useCanvas.ts:62-65`).
-
-### Bug fixes
-
-- Canvas state bugs → start at `src/composables/useCanvas.ts`.
-- Drag/resize misbehaviour → `src/composables/useDrag.ts`; coordinate clamping uses `CANVAS_SIZE` as the logical unit (`src/constants/index.ts:32`).
-- Panel not reflecting selection → check the `watch(selectedEl, ...)` block in the relevant panel component.
-- Mobile/desktop layout discrepancy → both trees share the same `useCanvas` singleton but are rendered independently; check both `RightPanel.vue` and `MobilePanels.vue`.
+| Symptom | Start here |
+| --- | --- |
+| Canvas state wrong | `src/composables/useCanvas.ts` |
+| Drag/resize off | `src/composables/useDrag.ts` — coordinate clamping uses `CANVAS_SIZE` as logical unit |
+| Panel not reflecting selection | `watch(selectedEl, …)` in the relevant panel component |
+| Mobile/desktop discrepancy | Both trees share same `useCanvas` singleton; check `RightPanel.vue` and `MobilePanels.vue` |
 
 ## Additional Documentation
 
-- `docs/architectural_patterns.md` — state management approach, component communication patterns, dual layout strategy, and other conventions that recur across the codebase.
+- `.claude/docs/architectural_patterns.md` — singleton composables, watch-based panel sync, event-up/composable-down communication, dual layout strategy, undo/redo, and other patterns that recur across the codebase. **Check this when adding state, panels, or canvas interactions.**
