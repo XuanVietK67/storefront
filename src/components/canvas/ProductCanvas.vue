@@ -78,13 +78,14 @@
       class="absolute -bottom-[38px] left-1/2 -translate-x-1/2 bg-[rgba(18,17,14,.93)] border border-line text-faint text-[10px] font-syne tracking-[.06em] px-3 py-[3px] rounded-[20px] whitespace-nowrap backdrop-blur-[10px] pointer-events-none transition-opacity duration-300"
       :class="hintVisible ? 'opacity-100' : 'opacity-0'"
     >
-      TAP TO SELECT · DRAG · RESIZE
+      {{ t('canvas.hint') }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, watchEffect, reactive, nextTick } from "vue";
+import { useI18n } from "vue-i18n";
 import Konva from "konva";
 import BagSvg from "./BagSvg.vue";
 import { CANVAS_SIZE, PRINT_ZONE } from "@/constants";
@@ -105,6 +106,8 @@ const emit = defineEmits<{
   resize: [payload: { id: string; scale: number; rotation: number }];
   deselect: [];
 }>();
+
+const { t } = useI18n()
 
 const stageRef = ref();
 const layerRef = ref();

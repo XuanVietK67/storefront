@@ -19,6 +19,14 @@ Rules that apply to all code in this repository.
 - All styling via inline Tailwind classes or inline `style` attributes. No CSS modules, no `<style>` blocks.
 - Responsive variants use Tailwind's `md:` prefix. Mobile-first.
 
+## i18n
+
+- Never hardcode user-visible strings in templates or scripts. Every label, placeholder, button text, toast, and hint must use `t('namespace.key')`.
+- In `<script setup>`: `import { useI18n } from 'vue-i18n'` then `const { t } = useI18n()`.
+- In composables: `import { i18n } from '@/i18n'` then `i18n.global.t('key')` — `useI18n()` requires component context and is unavailable in composables.
+- Arrays of translated strings must be `computed(() => [...])`. A plain `const` array is frozen at mount and ignores locale changes.
+- When adding any new string, add the translation key to all five locale files in `src/i18n/locales/` simultaneously.
+
 ## General
 
 - No `console.log` left in committed code.

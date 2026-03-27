@@ -1,18 +1,16 @@
 <template>
   <div class="flex flex-col gap-2">
-    <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Layer stack</p>
+    <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">{{ t('panel.layerStack') }}</p>
 
-    <!-- Empty state -->
     <div
       v-if="!reversedLayers.length"
       class="rounded-[10px] py-6 flex flex-col items-center gap-2"
       style="background: #f3f1ec; border: 1px dashed #d8d5cf;"
     >
       <span class="text-[28px]">◧</span>
-      <p class="text-[11px] font-syne text-faint text-center">No layers yet<br>Add something to get started</p>
+      <p class="text-[11px] font-syne text-faint text-center">{{ t('panel.noLayers') }}<br>{{ t('panel.noLayersHint') }}</p>
     </div>
 
-    <!-- Layer items -->
     <div
       v-for="(el, i) in reversedLayers"
       :key="el.id"
@@ -22,7 +20,6 @@
         : 'background: #f1f1f1; border: 1px solid #d9d9d9;'"
       @click="selectEl(el.id)"
     >
-      <!-- Layer number badge -->
       <span
         class="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-syne font-bold"
         :style="selectedId === el.id
@@ -30,20 +27,15 @@
           : 'background: #e8e8e1; color: #a8a8a8;'"
       >{{ reversedLayers.length - i }}</span>
 
-      <!-- Icon / text thumb -->
       <span class="text-[15px] flex-shrink-0 w-5 text-center">
         {{ el.type === 'text' ? '𝗧' : el.content.slice(0, 2) }}
       </span>
 
-      <!-- Name -->
       <span
         class="flex-1 text-xs font-syne font-medium"
         :style="selectedId === el.id ? 'color: #1a1916;' : 'color: #706d69;'"
-      >
-        {{ capitalize(el.type) }}
-      </span>
+      >{{ capitalize(el.type) }}</span>
 
-      <!-- Delete -->
       <button
         class="opacity-0 group-hover:opacity-100 w-5 h-5 rounded flex items-center justify-center text-[12px] transition-all duration-150 hover:!bg-danger/20 hover:!text-danger flex-shrink-0"
         style="color: #4a4845; background: transparent;"
@@ -55,8 +47,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useCanvas } from '@/composables/useCanvas'
 
+const { t } = useI18n()
 const { elements, selectedId, selectEl, removeEl } = useCanvas()
 
 const reversedLayers = computed(() => [...elements.value].reverse())

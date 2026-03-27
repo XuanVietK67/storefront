@@ -16,7 +16,7 @@
           class="flex-shrink-0 flex items-center justify-between px-5 py-4 md:px-4 md:py-3"
           style="background: rgba(0,0,0,0.5);"
         >
-          <span class="text-white text-[14px] font-bold font-syne tracking-wide">Take a Photo</span>
+          <span class="text-white text-[14px] font-bold font-syne tracking-wide">{{ t('camera.title') }}</span>
           <button
             class="text-white text-[26px] leading-none opacity-60 active:opacity-100"
             @click="closeCamera"
@@ -53,7 +53,7 @@
             :style="flipped
               ? 'background: rgba(0,128,96,0.30); border: 1.5px solid #008060;'
               : 'background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.28);'"
-            title="Flip horizontal"
+            :title="t('camera.flip')"
             @click="flipped = !flipped"
           >
             <span class="text-[22px] select-none">🔄</span>
@@ -75,7 +75,7 @@
             @click="closeCamera"
           >
             <span class="text-[22px] leading-none">✕</span>
-            <span class="text-white text-[10px] font-syne font-bold tracking-wide">Cancel</span>
+            <span class="text-white text-[10px] font-syne font-bold tracking-wide">{{ t('camera.cancel') }}</span>
           </button>
         </div>
       </div>
@@ -88,9 +88,11 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useCamera } from '@/composables/useCamera'
 import { useCanvas } from '@/composables/useCanvas'
 
+const { t } = useI18n()
 const { cameraOpen } = useCamera()
 const { addImage } = useCanvas()
 
@@ -109,7 +111,7 @@ watch(cameraOpen, async (open) => {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
     if (videoEl.value) videoEl.value.srcObject = stream
   } catch {
-    cameraError.value = 'Camera access denied or not available on this device.'
+    cameraError.value = t('camera.error')
   }
 })
 

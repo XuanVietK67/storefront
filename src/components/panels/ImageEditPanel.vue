@@ -4,7 +4,7 @@
       v-if="!selectedEl || selectedEl.type !== 'image'"
       class="text-[11px] text-center font-syne py-2"
       style="color: rgba(99,102,241,0.45);"
-    >✦ Select an image element on the canvas</p>
+    >{{ t('panel.selectImageHint') }}</p>
 
     <template v-else>
       <!-- Transform -->
@@ -12,15 +12,15 @@
         class="rounded-[10px] p-3 flex flex-col gap-[10px]"
         style="background: #f8fafc; border: 1px solid #e2e8f0; box-shadow: 0 1px 6px rgba(99,102,241,0.06);"
       >
-        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Transform</p>
-        <SliderRow label="Size"    :min="25"  :max="400" v-model="sizeVal" :displayValue="Math.round(sizeVal) + '%'" />
-        <SliderRow label="Rotate"  :min="0"   :max="360" v-model="rotVal"  :displayValue="Math.round(rotVal) + '°'" />
-        <SliderRow label="Opacity" :min="10"  :max="100" v-model="opVal"   :displayValue="Math.round(opVal) + '%'" />
+        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">{{ t('panel.transform') }}</p>
+        <SliderRow :label="t('panel.size')"    :min="25"  :max="400" v-model="sizeVal" :displayValue="Math.round(sizeVal) + '%'" />
+        <SliderRow :label="t('panel.rotate')"  :min="0"   :max="360" v-model="rotVal"  :displayValue="Math.round(rotVal) + '°'" />
+        <SliderRow :label="t('panel.opacity')" :min="10"  :max="100" v-model="opVal"   :displayValue="Math.round(opVal) + '%'" />
       </div>
 
       <!-- Flip -->
       <div class="flex flex-col gap-[6px]">
-        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Flip</p>
+        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">{{ t('panel.flip') }}</p>
         <div class="flex gap-2">
           <button
             class="flex-1 py-[7px] rounded-[8px] text-[11px] font-bold font-syne transition-all active:scale-95"
@@ -28,30 +28,30 @@
               ? 'background:#008060; color:#fff; border:1px solid #008060;'
               : 'background:#f8fafc; color:#475569; border:1px solid #e2e8f0;'"
             @click="toggleFlip('flipX')"
-          >↔ Horizontal</button>
+          >{{ t('panel.horizontal') }}</button>
           <button
             class="flex-1 py-[7px] rounded-[8px] text-[11px] font-bold font-syne transition-all active:scale-95"
             :style="selectedEl.flipY
               ? 'background:#008060; color:#fff; border:1px solid #008060;'
               : 'background:#f8fafc; color:#475569; border:1px solid #e2e8f0;'"
             @click="toggleFlip('flipY')"
-          >↕ Vertical</button>
+          >{{ t('panel.vertical') }}</button>
         </div>
       </div>
 
       <!-- Filter presets -->
       <div class="flex flex-col gap-[6px]">
-        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Filter Presets</p>
+        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">{{ t('panel.filterPresets') }}</p>
         <div class="grid grid-cols-4 gap-[5px]">
           <button
             v-for="p in FILTER_PRESETS"
-            :key="p.name"
+            :key="p.key"
             class="py-[6px] rounded-[7px] text-[10px] font-syne font-bold transition-all active:scale-95"
             :style="isActivePreset(p)
               ? 'background:#008060; color:#fff; border:1px solid transparent;'
               : 'background:#f8fafc; color:#475569; border:1px solid #e2e8f0;'"
             @click="applyPreset(p)"
-          >{{ p.name }}</button>
+          >{{ t('panel.' + p.key) }}</button>
         </div>
       </div>
 
@@ -60,10 +60,10 @@
         class="rounded-[10px] p-3 flex flex-col gap-[10px]"
         style="background: #f8fafc; border: 1px solid #e2e8f0;"
       >
-        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Adjustments</p>
-        <SliderRow label="Bright"    :min="0" :max="200" v-model="brightnessVal" :displayValue="brightnessVal + '%'" />
-        <SliderRow label="Contrast"  :min="0" :max="200" v-model="contrastVal"   :displayValue="contrastVal + '%'" />
-        <SliderRow label="Sat."      :min="0" :max="200" v-model="saturateVal"   :displayValue="saturateVal + '%'" />
+        <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">{{ t('panel.adjustments') }}</p>
+        <SliderRow :label="t('panel.brightness')" :min="0" :max="200" v-model="brightnessVal" :displayValue="brightnessVal + '%'" />
+        <SliderRow :label="t('panel.contrast')"   :min="0" :max="200" v-model="contrastVal"   :displayValue="contrastVal + '%'" />
+        <SliderRow :label="t('panel.saturation')" :min="0" :max="200" v-model="saturateVal"   :displayValue="saturateVal + '%'" />
       </div>
 
       <!-- Crop -->
@@ -71,42 +71,40 @@
         class="w-full py-[9px] rounded-[9px] text-[12px] font-bold font-syne text-white transition-all active:scale-95"
         style="background: linear-gradient(135deg, #475569, #334155);"
         @click="triggerCrop"
-      >✂ Crop Image</button>
+      >{{ t('panel.cropImage') }}</button>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import SliderRow from '@/components/ui/SliderRow.vue'
 import { useCanvas } from '@/composables/useCanvas'
 import { useCrop } from '@/composables/useCrop'
 
+const { t } = useI18n()
 const { selectedEl, updateEl, saveUndo } = useCanvas()
 const { openCrop } = useCrop()
 
-// ── Transform ──
-const sizeVal = ref(100)
-const rotVal  = ref(0)
-const opVal   = ref(100)
-
-// ── Filters ──
+const sizeVal       = ref(100)
+const rotVal        = ref(0)
+const opVal         = ref(100)
 const brightnessVal = ref(100)
 const contrastVal   = ref(100)
 const saturateVal   = ref(100)
 
 const FILTER_PRESETS = [
-  { name: 'Normal',   brightness: 100, contrast: 100, saturate: 100, sepia: 0  },
-  { name: 'Vivid',    brightness: 100, contrast: 115, saturate: 160, sepia: 0  },
-  { name: 'Warm',     brightness: 105, contrast: 100, saturate: 130, sepia: 30 },
-  { name: 'Fade',     brightness: 115, contrast: 80,  saturate: 70,  sepia: 0  },
-  { name: 'B&W',      brightness: 100, contrast: 110, saturate: 0,   sepia: 0  },
-  { name: 'Sepia',    brightness: 105, contrast: 100, saturate: 80,  sepia: 80 },
-  { name: 'Dramatic', brightness: 90,  contrast: 150, saturate: 60,  sepia: 10 },
-  { name: 'Cool',     brightness: 100, contrast: 105, saturate: 80,  sepia: 0  },
+  { key: 'filterNormal',   brightness: 100, contrast: 100, saturate: 100, sepia: 0  },
+  { key: 'filterVivid',    brightness: 100, contrast: 115, saturate: 160, sepia: 0  },
+  { key: 'filterWarm',     brightness: 105, contrast: 100, saturate: 130, sepia: 30 },
+  { key: 'filterFade',     brightness: 115, contrast: 80,  saturate: 70,  sepia: 0  },
+  { key: 'filterBW',       brightness: 100, contrast: 110, saturate: 0,   sepia: 0  },
+  { key: 'filterSepia',    brightness: 105, contrast: 100, saturate: 80,  sepia: 80 },
+  { key: 'filterDramatic', brightness: 90,  contrast: 150, saturate: 60,  sepia: 10 },
+  { key: 'filterCool',     brightness: 100, contrast: 105, saturate: 80,  sepia: 0  },
 ]
 
-// Sync local state when selection changes
 watch(selectedEl, el => {
   if (!el || el.type !== 'image') return
   sizeVal.value       = Math.round((el.scale   ?? 1) * 100)
@@ -117,7 +115,6 @@ watch(selectedEl, el => {
   saturateVal.value   = el.saturate   ?? 100
 }, { immediate: true })
 
-// Write-back sliders → canvas
 watch(sizeVal,       v => { if (selectedEl.value?.type === 'image') updateEl(selectedEl.value.id, { scale: v / 100 }) })
 watch(rotVal,        v => { if (selectedEl.value?.type === 'image') updateEl(selectedEl.value.id, { rotation: v }) })
 watch(opVal,         v => { if (selectedEl.value?.type === 'image') updateEl(selectedEl.value.id, { opacity: v / 100 }) })
@@ -148,20 +145,12 @@ function applyPreset(p: typeof FILTER_PRESETS[0]): void {
   brightnessVal.value = p.brightness
   contrastVal.value   = p.contrast
   saturateVal.value   = p.saturate
-  updateEl(selectedEl.value.id, {
-    brightness: p.brightness,
-    contrast:   p.contrast,
-    saturate:   p.saturate,
-    sepia:      p.sepia,
-  })
+  updateEl(selectedEl.value.id, { brightness: p.brightness, contrast: p.contrast, saturate: p.saturate, sepia: p.sepia })
 }
 
 function triggerCrop(): void {
   if (!selectedEl.value?.content) return
   const id = selectedEl.value.id
-  openCrop(selectedEl.value.content, (dataUrl) => {
-    saveUndo()
-    updateEl(id, { content: dataUrl })
-  })
+  openCrop(selectedEl.value.content, (dataUrl) => { saveUndo(); updateEl(id, { content: dataUrl }) })
 }
 </script>
