@@ -31,6 +31,7 @@
             @click="onGroupClick($event, el.id)"
             @tap="onGroupClick($event, el.id)"
             @mouseenter="showHint"
+            @dragmove="updateDeletePos"
             @dragend="onDragEnd($event, el.id)"
             @transformend="onTransformEnd($event, el.id)"
           >
@@ -262,19 +263,19 @@ function updateDeletePos(): void {
 // ── Node config builders ──────────────────────────────────────────────────────
 
 function groupConfig(el: CanvasElement) {
-  const flipX = el.type === "image" && el.flipX ? -1 : 1;
-  const flipY = el.type === "image" && el.flipY ? -1 : 1;
   return {
     id: el.id,
     x: el.x,
     y: el.y,
-    scaleX: el.scale * flipX,
-    scaleY: el.scale * flipY,
+    // Flip is intentionally NOT encoded here. Applying a negative scaleX/scaleY on
+    // the group would mirror around the group's origin (top-left corner of the content),
+    // causing the image to jump sideways by its full width. Instead, flip is applied
+    // directly on the image node with an offsetting x/y so the image stays in place.
+    scaleX: el.scale,
+    scaleY: el.scale,
     rotation: el.rotation,
     opacity: el.opacity,
     draggable: true,
-    // Bug fix: read stageScale.value inside the closure so it always uses the
-    // current zoom level at the moment of the drag call, not a stale render-time snapshot.
     dragBoundFunc(pos: { x: number; y: number }) {
       const sc = stageScale.value;
       return {
@@ -298,7 +299,6 @@ function textNodeConfig(el: CanvasElement) {
     shadowBlur: 6,
     shadowOffsetX: 2,
     shadowOffsetY: 3,
-    listening: false,
   };
 }
 
@@ -306,7 +306,6 @@ function stickerNodeConfig(el: CanvasElement) {
   return {
     text: el.content,
     fontSize: 44,
-    listening: false,
   };
 }
 
@@ -315,23 +314,32 @@ function iconNodeConfig(el: CanvasElement) {
     text: el.content,
     fontSize: 36,
     fill: el.color,
-    listening: false,
   };
 }
 
 function imageNodeConfig(el: CanvasElement) {
   const source = filteredCanvases[el.id] ?? loadedImages[el.content];
+  // No source yet — return a zero-size placeholder; listening:false is safe here
+  // because the group itself still has no hittable area until the image loads.
   if (!source) return { x: 0, y: 0, width: 0, height: 0, listening: false };
   const w = (source as HTMLCanvasElement).width || 120;
   const h = (source as HTMLCanvasElement).height || 120;
+
+  // Flip is applied here (not on the group) to keep the image in place.
+  // scaleX=-1 mirrors around x=0, which would push the image off to the left.
+  // Offsetting x by w (the image's own width) slides it back so it renders
+  // over exactly the same region as the unflipped version. Same logic for Y.
+  const flipX = el.flipX ? -1 : 1;
+  const flipY = el.flipY ? -1 : 1;
   return {
     image: source,
-    x: 0,
-    y: 0,
+    x: el.flipX ? w : 0,
+    y: el.flipY ? h : 0,
     width: w,
     height: h,
+    scaleX: flipX,
+    scaleY: flipY,
     cornerRadius: 4,
-    listening: false,
   };
 }
 
@@ -377,11 +385,11 @@ function onTransformEnd(e: any, id: string): void {
   const newX = group.x();
   const newY = group.y();
 
-  // Reset to scale × flip so cumulative transforms don't drift
-  const flipX = el.type === "image" && el.flipX ? -1 : 1;
-  const flipY = el.type === "image" && el.flipY ? -1 : 1;
-  group.scaleX(newScale * flipX);
-  group.scaleY(newScale * flipY);
+  // Reset scale to the clamped value so cumulative transforms don't drift.
+  // Flip is encoded on the image node (not the group), so we never set a
+  // negative scaleX/scaleY here.
+  group.scaleX(newScale);
+  group.scaleY(newScale);
 
   emit("resize", { id, scale: newScale, rotation: newRotation });
   emit("move", { id, x: newX, y: newY });
