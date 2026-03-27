@@ -68,3 +68,7 @@ export const TOOL_NAMES: Record<string, string> = {
 }
 
 export const CANVAS_SIZE = { w: 280, h: 320 } as const
+
+/** Printable zone — matches the bag body rect in BagSvg (x=16, y=52, w=248, h=256).
+ *  All canvas elements are constrained to this area. */
+export const PRINT_ZONE = { x: 16, y: 52, w: 248, h: 256 } as const

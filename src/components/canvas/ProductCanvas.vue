@@ -22,6 +22,9 @@
         @tap="onStageClick"
       >
         <v-layer ref="layerRef">
+          <!-- Print-zone boundary — dashed rect that matches the bag body -->
+          <v-rect :config="zoneIndicatorConfig" />
+
           <v-group
             v-for="el in elements"
             :key="el.id"
@@ -82,7 +85,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, watchEffect, reactive, nextTick } from "vue";
 import BagSvg from "./BagSvg.vue";
-import { CANVAS_SIZE } from "@/constants";
+import { CANVAS_SIZE, PRINT_ZONE } from "@/constants";
 import type { CanvasElement } from "@/types";
 
 const props = defineProps<{
@@ -177,6 +180,21 @@ function buildFilterCanvas(el: CanvasElement, img: HTMLImageElement): void {
   }
   ctx.drawImage(img, 0, 0, w, h);
   filteredCanvases[el.id] = canvas;
+}
+
+// ── Print-zone indicator ──────────────────────────────────────────────────────
+
+const zoneIndicatorConfig = {
+  x:           PRINT_ZONE.x,
+  y:           PRINT_ZONE.y,
+  width:       PRINT_ZONE.w,
+  height:      PRINT_ZONE.h,
+  cornerRadius: 6,
+  stroke:       'rgba(99,102,241,0.45)',
+  strokeWidth:  1,
+  dash:         [5, 4],
+  fill:         'transparent',
+  listening:    false,
 }
 
 // ── Stage / Transformer config ────────────────────────────────────────────────
@@ -278,9 +296,31 @@ function groupConfig(el: CanvasElement) {
     draggable: true,
     dragBoundFunc(pos: { x: number; y: number }) {
       const sc = stageScale.value;
+      const stage = stageRef.value?.getStage();
+      if (!stage) return pos;
+
+      const group = stage.findOne(`#${el.id}`);
+      if (!group) return pos;
+
+      // AABB in canvas pixels — accounts for rotation, scale, and all children.
+      const rect = group.getClientRect();
+      const absPos = group.absolutePosition();
+
+      // Offset from the group's origin to the AABB top-left.
+      // This depends only on content size + rotation, so it's constant during drag.
+      const offsetX = rect.x - absPos.x;
+      const offsetY = rect.y - absPos.y;
+
+      // Print zone boundaries in canvas pixels.
+      const pzLeft   = PRINT_ZONE.x * sc;
+      const pzTop    = PRINT_ZONE.y * sc;
+      const pzRight  = (PRINT_ZONE.x + PRINT_ZONE.w) * sc;
+      const pzBottom = (PRINT_ZONE.y + PRINT_ZONE.h) * sc;
+
+      // Clamp the origin so every corner of the AABB stays inside the print zone.
       return {
-        x: Math.max(0, Math.min((CANVAS_SIZE.w - 30) * sc, pos.x)),
-        y: Math.max(0, Math.min((CANVAS_SIZE.h - 24) * sc, pos.y)),
+        x: Math.max(pzLeft - offsetX, Math.min(pzRight - offsetX - rect.width, pos.x)),
+        y: Math.max(pzTop - offsetY, Math.min(pzBottom - offsetY - rect.height, pos.y)),
       };
     },
   };
