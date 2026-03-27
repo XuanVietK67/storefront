@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@ownego/polaris-vue": "^2.1.33",
-    "vue": "^3.4.21"
+    "konva": "^10.2.3",
+    "vue": "^3.4.21",
+    "vue-konva": "^3.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

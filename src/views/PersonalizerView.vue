@@ -50,7 +50,7 @@
           @select="selectEl"
           @remove="removeEl"
           @move="({ id, x, y }) => updateEl(id, { x, y })"
-          @resize="({ id, scale }) => updateEl(id, { scale })"
+          @resize="({ id, scale, rotation }) => updateEl(id, { scale, rotation })"
           @deselect="deselect"
         />
 

@@ -2,48 +2,71 @@
   <div
     class="relative flex-shrink-0 rounded-[18px] overflow-visible"
     :style="{
-      width:  canvasWidth + 'px',
+      width: canvasWidth + 'px',
       height: canvasHeight + 'px',
-      boxShadow: '0 0 0 1px rgba(0,0,0,.06), 0 24px 80px rgba(0,0,0,.14), 0 8px 24px rgba(0,0,0,.08)',
+      boxShadow:
+        '0 0 0 1px rgba(0,0,0,.06), 0 24px 80px rgba(0,0,0,.14), 0 8px 24px rgba(0,0,0,.08)',
     }"
   >
-    <!-- Layer count badge -->
-    <!-- <div
-      class="absolute -top-[13px] left-0 rounded-[20px] px-[10px] py-[2px] text-[9px] font-syne font-bold border backdrop-blur-sm pointer-events-none transition-all duration-200 z-[5]"
-      :class="elements.length
-        ? 'text-accent border-accent/[.28] bg-app/90'
-        : 'text-faint border-line bg-app/90'"
-    >
-      {{ elements.length }} {{ elements.length === 1 ? 'layer' : 'layers' }}
-    </div> -->
-
-    <!-- Canvas inner (scaled for zoom) -->
-    <div
-      ref="cvInnerRef"
-      class="w-full h-full rounded-[18px] overflow-hidden relative"
-      :style="{ transform: `scale(${canvasScale})`, transformOrigin: 'top left' }"
-    >
+    <!-- Bag background (DOM, sits behind the transparent Konva canvas) -->
+    <div class="absolute inset-0 rounded-[18px] overflow-hidden">
       <BagSvg />
-
-      <!-- Overlay: draggable elements -->
-      <div
-        class="absolute inset-0 rounded-[18px] z-[2]"
-        @click.self="$emit('deselect')"
-      >
-        <DraggableElement
-          v-for="el in elements"
-          :key="el.id"
-          :element="el"
-          :is-selected="el.id === selectedId"
-          :canvas-el="cvInnerRef"
-          @select="$emit('select', $event)"
-          @remove="$emit('remove', $event)"
-          @move="$emit('move', $event)"
-          @resize="$emit('resize', $event)"
-          @hint="showHint"
-        />
-      </div>
     </div>
+
+    <!-- Konva Stage (transparent canvas layered over the bag) -->
+    <div class="absolute inset-0 rounded-[18px] overflow-hidden">
+      <v-stage
+        ref="stageRef"
+        :config="stageConfig"
+        @click="onStageClick"
+        @tap="onStageClick"
+      >
+        <v-layer ref="layerRef">
+          <v-group
+            v-for="el in elements"
+            :key="el.id"
+            :config="groupConfig(el)"
+            @mousedown="onGroupPointerDown($event, el.id)"
+            @touchstart="onGroupPointerDown($event, el.id)"
+            @click="onGroupClick($event, el.id)"
+            @tap="onGroupClick($event, el.id)"
+            @mouseenter="showHint"
+            @dragend="onDragEnd($event, el.id)"
+            @transformend="onTransformEnd($event, el.id)"
+          >
+            <v-text v-if="el.type === 'text'" :config="textNodeConfig(el)" />
+            <v-text
+              v-else-if="el.type === 'sticker'"
+              :config="stickerNodeConfig(el)"
+            />
+            <v-text
+              v-else-if="el.type === 'icon'"
+              :config="iconNodeConfig(el)"
+            />
+            <v-image
+              v-else-if="el.type === 'image'"
+              :config="imageNodeConfig(el)"
+            />
+          </v-group>
+
+          <v-transformer ref="transformerRef" :config="transformerConfig" />
+        </v-layer>
+      </v-stage>
+    </div>
+
+    <!-- Delete button (HTML overlay, positioned from Konva bounding box) -->
+    <button
+      v-if="selectedId && deletePos"
+      class="absolute w-[21px] h-[21px] bg-danger border-2 border-app rounded-full flex items-center justify-center text-[11px] text-white cursor-pointer z-20"
+      :style="{
+        top: deletePos.y + 'px',
+        left: deletePos.x + 'px',
+        transform: 'translate(-50%, -50%)',
+      }"
+      @click.stop="$emit('remove', selectedId)"
+    >
+      ×
+    </button>
 
     <!-- Hover hint -->
     <div
@@ -55,29 +78,327 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
-import BagSvg from './BagSvg.vue'
-import DraggableElement from './DraggableElement.vue'
-import { CANVAS_SIZE } from '@/constants'
+<script setup lang="ts">
+import { ref, computed, watch, watchEffect, reactive, nextTick } from "vue";
+import BagSvg from "./BagSvg.vue";
+import { CANVAS_SIZE } from "@/constants";
+import type { CanvasElement } from "@/types";
 
-const props = defineProps({
-  elements:    { type: Array,  required: true },
-  selectedId:  { type: String, default: null },
-  canvasScale: { type: Number, default: 1 },
-  canvasWidth: { type: Number, required: true },
-  canvasHeight:{ type: Number, required: true },
-})
+const props = defineProps<{
+  elements: CanvasElement[];
+  selectedId: string | null;
+  canvasScale: number;
+  canvasWidth: number;
+  canvasHeight: number;
+}>();
 
-defineEmits(['select', 'remove', 'move', 'resize', 'deselect'])
+const emit = defineEmits<{
+  select: [id: string];
+  remove: [id: string];
+  move: [payload: { id: string; x: number; y: number }];
+  resize: [payload: { id: string; scale: number; rotation: number }];
+  deselect: [];
+}>();
 
-const cvInnerRef = ref(null)
-const hintVisible = ref(false)
-let hintTimer = null
+const stageRef = ref();
+const layerRef = ref();
+const transformerRef = ref();
 
-function showHint() {
-  hintVisible.value = true
-  clearTimeout(hintTimer)
-  hintTimer = setTimeout(() => { hintVisible.value = false }, 1400)
+// ── Image loading ─────────────────────────────────────────────────────────────
+
+const loadedImages = reactive<Record<string, HTMLImageElement>>({});
+const filteredCanvases = reactive<Record<string, HTMLCanvasElement>>({});
+
+// Load images as they appear in elements
+watchEffect(() => {
+  props.elements.forEach((el) => {
+    if (el.type === "image" && el.content && !loadedImages[el.content]) {
+      const img = new window.Image();
+      // Bug fix: crossOrigin must not be set for data URLs — it causes canvas-tainting
+      // errors in some browsers. Only set it for remote http/https sources.
+      if (el.content.startsWith("http")) {
+        img.crossOrigin = "anonymous";
+      }
+      img.onload = () => {
+        loadedImages[el.content] = img;
+        buildFilterCanvas(el, img);
+      };
+      img.src = el.content;
+    }
+  });
+});
+
+// Rebuild the filter canvas whenever brightness/contrast/saturate/sepia change
+watch(
+  () =>
+    props.elements
+      .filter((e) => e.type === "image")
+      .map((e) => ({
+        id: e.id,
+        content: e.content,
+        b: e.brightness,
+        c: e.contrast,
+        s: e.saturate,
+        sp: e.sepia,
+      })),
+  (snapshots) => {
+    snapshots.forEach((snap) => {
+      const img = loadedImages[snap.content];
+      if (!img) return;
+      const el = props.elements.find((e) => e.id === snap.id);
+      if (el) buildFilterCanvas(el, img);
+    });
+  },
+  { deep: true },
+);
+
+function buildFilterCanvas(el: CanvasElement, img: HTMLImageElement): void {
+  const maxSize = 120;
+  const ratio = Math.min(
+    maxSize / img.naturalWidth,
+    maxSize / img.naturalHeight,
+    1,
+  );
+  const w = Math.max(1, Math.round(img.naturalWidth * ratio));
+  const h = Math.max(1, Math.round(img.naturalHeight * ratio));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d")!;
+
+  const b = el.brightness ?? 100;
+  const c = el.contrast ?? 100;
+  const s = el.saturate ?? 100;
+  const sp = el.sepia ?? 0;
+  if (!(b === 100 && c === 100 && s === 100 && sp === 0)) {
+    ctx.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%) sepia(${sp}%)`;
+  }
+  ctx.drawImage(img, 0, 0, w, h);
+  filteredCanvases[el.id] = canvas;
+}
+
+// ── Stage / Transformer config ────────────────────────────────────────────────
+
+const stageScale = computed(
+  () => (props.canvasWidth / CANVAS_SIZE.w) * props.canvasScale,
+);
+
+const stageConfig = computed(() => ({
+  width: props.canvasWidth,
+  height: props.canvasHeight,
+  scaleX: stageScale.value,
+  scaleY: stageScale.value,
+}));
+
+const transformerConfig = {
+  enabledAnchors: ["top-left", "top-right", "bottom-left", "bottom-right"],
+  rotateEnabled: true,
+  keepRatio: true,
+  borderStroke: "#6366f1",
+  borderStrokeWidth: 1.5,
+  anchorStroke: "#6366f1",
+  anchorFill: "#fff",
+  anchorSize: 8,
+  anchorCornerRadius: 4,
+  padding: 4,
+};
+
+// ── Transformer + delete button sync ─────────────────────────────────────────
+
+// immediate: true so the transformer attaches if selectedId is already set on mount
+watch(
+  () => props.selectedId,
+  async () => {
+    await nextTick();
+    updateTransformer();
+    updateDeletePos();
+  },
+  { immediate: true },
+);
+
+// Recompute delete-button position when any element changes (e.g. panel edits)
+watch(
+  () => props.elements,
+  async () => {
+    await nextTick();
+    updateDeletePos();
+  },
+  { deep: true },
+);
+
+function updateTransformer(): void {
+  const tr = transformerRef.value?.getNode();
+  const stage = stageRef.value?.getStage();
+  if (!tr || !stage) return;
+  if (props.selectedId) {
+    const group = stage.findOne(`#${props.selectedId}`);
+    tr.nodes(group ? [group] : []);
+  } else {
+    tr.nodes([]);
+  }
+  layerRef.value?.getNode()?.batchDraw();
+}
+
+const deletePos = ref<{ x: number; y: number } | null>(null);
+
+function updateDeletePos(): void {
+  if (!props.selectedId) {
+    deletePos.value = null;
+    return;
+  }
+  const stage = stageRef.value?.getStage();
+  if (!stage) return;
+  const group = stage.findOne(`#${props.selectedId}`);
+  if (!group) {
+    deletePos.value = null;
+    return;
+  }
+  // getClientRect() returns coords in stage-canvas pixel space (= CSS px from container top-left)
+  const box = group.getClientRect();
+  deletePos.value = { x: box.x + box.width, y: box.y };
+}
+
+// ── Node config builders ──────────────────────────────────────────────────────
+
+function groupConfig(el: CanvasElement) {
+  const flipX = el.type === "image" && el.flipX ? -1 : 1;
+  const flipY = el.type === "image" && el.flipY ? -1 : 1;
+  return {
+    id: el.id,
+    x: el.x,
+    y: el.y,
+    scaleX: el.scale * flipX,
+    scaleY: el.scale * flipY,
+    rotation: el.rotation,
+    opacity: el.opacity,
+    draggable: true,
+    // Bug fix: read stageScale.value inside the closure so it always uses the
+    // current zoom level at the moment of the drag call, not a stale render-time snapshot.
+    dragBoundFunc(pos: { x: number; y: number }) {
+      const sc = stageScale.value;
+      return {
+        x: Math.max(0, Math.min((CANVAS_SIZE.w - 30) * sc, pos.x)),
+        y: Math.max(0, Math.min((CANVAS_SIZE.h - 24) * sc, pos.y)),
+      };
+    },
+  };
+}
+
+function textNodeConfig(el: CanvasElement) {
+  return {
+    text: el.content,
+    fontSize: 20,
+    fontFamily: el.fontFamily,
+    fill: el.color,
+    fontStyle: el.bold === false ? "normal" : "bold",
+    padding: 2,
+    shadowEnabled: el.shadow ?? false,
+    shadowColor: "rgba(0,0,0,0.45)",
+    shadowBlur: 6,
+    shadowOffsetX: 2,
+    shadowOffsetY: 3,
+    listening: false,
+  };
+}
+
+function stickerNodeConfig(el: CanvasElement) {
+  return {
+    text: el.content,
+    fontSize: 44,
+    listening: false,
+  };
+}
+
+function iconNodeConfig(el: CanvasElement) {
+  return {
+    text: el.content,
+    fontSize: 36,
+    fill: el.color,
+    listening: false,
+  };
+}
+
+function imageNodeConfig(el: CanvasElement) {
+  const source = filteredCanvases[el.id] ?? loadedImages[el.content];
+  if (!source) return { x: 0, y: 0, width: 0, height: 0, listening: false };
+  const w = (source as HTMLCanvasElement).width || 120;
+  const h = (source as HTMLCanvasElement).height || 120;
+  return {
+    image: source,
+    x: 0,
+    y: 0,
+    width: w,
+    height: h,
+    cornerRadius: 4,
+    listening: false,
+  };
+}
+
+// ── Event handlers ────────────────────────────────────────────────────────────
+
+function onStageClick(e: any): void {
+  if (e.target === stageRef.value?.getStage()) {
+    emit("deselect");
+  }
+}
+
+// Bug fix: use mousedown/touchstart instead of dragstart for selection.
+// dragstart fires after the pointer has already moved, so emitting 'select' there
+// would trigger a re-render mid-drag and cause vue-konva to call setAttrs({x, y})
+// with the pre-drag coordinates, snapping the element back to its original position.
+// mousedown fires before any movement, so the re-render happens while the group is
+// still at its stored position — no conflict with Konva's drag tracking.
+function onGroupPointerDown(e: any, id: string): void {
+  e.cancelBubble = true;
+  emit("select", id);
+}
+
+// click fires only when there was no drag; cancels bubble so the stage
+// @click handler does not fire and deselect the element we just selected.
+function onGroupClick(e: any, id: string): void {
+  e.cancelBubble = true;
+  emit("select", id);
+}
+
+function onDragEnd(e: any, id: string): void {
+  const group = e.target;
+  emit("move", { id, x: group.x(), y: group.y() });
+  updateDeletePos();
+}
+
+function onTransformEnd(e: any, id: string): void {
+  const group = e.target;
+  const el = props.elements.find((el) => el.id === id);
+  if (!el) return;
+
+  const newScale = Math.max(0.25, Math.min(4, Math.abs(group.scaleX())));
+  const newRotation = group.rotation();
+  const newX = group.x();
+  const newY = group.y();
+
+  // Reset to scale × flip so cumulative transforms don't drift
+  const flipX = el.type === "image" && el.flipX ? -1 : 1;
+  const flipY = el.type === "image" && el.flipY ? -1 : 1;
+  group.scaleX(newScale * flipX);
+  group.scaleY(newScale * flipY);
+
+  emit("resize", { id, scale: newScale, rotation: newRotation });
+  emit("move", { id, x: newX, y: newY });
+
+  nextTick(updateDeletePos);
+}
+
+// ── Hint ──────────────────────────────────────────────────────────────────────
+
+const hintVisible = ref(false);
+let hintTimer: ReturnType<typeof setTimeout> | null = null;
+
+function showHint(): void {
+  hintVisible.value = true;
+  if (hintTimer) clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => {
+    hintVisible.value = false;
+  }, 1400);
 }
 </script>
