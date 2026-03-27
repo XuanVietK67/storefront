@@ -34,6 +34,7 @@
             @click="onGroupClick($event, el.id)"
             @tap="onGroupClick($event, el.id)"
             @mouseenter="showHint"
+            @dragstart="onDragStart($event, el.id)"
             @dragmove="updateDeletePos"
             @dragend="onDragEnd($event, el.id)"
             @transformend="onTransformEnd($event, el.id)"
@@ -84,6 +85,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, watchEffect, reactive, nextTick } from "vue";
+import Konva from "konva";
 import BagSvg from "./BagSvg.vue";
 import { CANVAS_SIZE, PRINT_ZONE } from "@/constants";
 import type { CanvasElement } from "@/types";
@@ -409,10 +411,39 @@ function onGroupClick(e: any, id: string): void {
   emit("select", id);
 }
 
+function onDragStart(e: any, id: string): void {
+  const group = e.target;
+  const el = props.elements.find((el) => el.id === id);
+  if (!el) return;
+  group.to({
+    scaleX: el.scale * 1.07,
+    scaleY: el.scale * 1.07,
+    opacity: Math.min(el.opacity ?? 1, 0.82),
+    shadowEnabled: true,
+    shadowColor: "rgba(0,0,0,0.28)",
+    shadowBlur: 20,
+    shadowOffsetX: 0,
+    shadowOffsetY: 8,
+    duration: 0.12,
+    easing: Konva.Easings.EaseOut,
+  });
+}
+
 function onDragEnd(e: any, id: string): void {
   const group = e.target;
-  emit("move", { id, x: group.x(), y: group.y() });
+  const el = props.elements.find((el) => el.id === id);
+  const newX = group.x();
+  const newY = group.y();
   updateDeletePos();
+  group.to({
+    scaleX: el?.scale ?? group.scaleX(),
+    scaleY: el?.scale ?? group.scaleY(),
+    opacity: el?.opacity ?? 1,
+    shadowEnabled: false,
+    duration: 0.18,
+    easing: Konva.Easings.EaseOut,
+    onFinish: () => emit("move", { id, x: newX, y: newY }),
+  });
 }
 
 function onTransformEnd(e: any, id: string): void {
