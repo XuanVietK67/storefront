@@ -80,13 +80,15 @@
       <RightPanel class="hidden md:flex" :activeTool="activeTool" />
     </div>
 
-    <!-- Mobile: inline text editor replaces toolbar when a text element is selected -->
-    <MobileTextEditBar v-if="selectedEl?.type === 'text'" />
-    <MobileToolbar
-      v-else
-      :activePanel="activeMobPanel"
-      @toggle="toggleMobPanel"
-    />
+    <!-- Mobile: inline text editor replaces toolbar when a text element is selected; hide both when camera is open -->
+    <template v-if="!cameraOpen">
+      <MobileTextEditBar v-if="selectedEl?.type === 'text'" />
+      <MobileToolbar
+        v-else
+        :activePanel="activeMobPanel"
+        @toggle="toggleMobPanel"
+      />
+    </template>
 
     <!-- Mobile panels: hidden while text editing to keep the layout uncluttered -->
     <MobilePanels
@@ -116,6 +118,7 @@ import MobileCta from "@/components/MobileCta.vue";
 import Toast from "@/components/Toast.vue";
 
 import { useCanvas } from "@/composables/useCanvas";
+import { useCamera } from "@/composables/useCamera";
 
 const {
   elements,
@@ -132,6 +135,8 @@ const {
   doClear,
   zoom,
 } = useCanvas();
+
+const { cameraOpen } = useCamera();
 
 // Active tool (right panel / sidebar)
 const activeTool = ref("text");

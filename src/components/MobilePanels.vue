@@ -201,6 +201,7 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
+import { useCamera } from "@/composables/useCamera";
 import ColorStrip from "@/components/ui/ColorStrip.vue";
 import FontPicker from "@/components/ui/FontPicker.vue";
 import EmojiGrid  from "@/components/ui/EmojiGrid.vue";
@@ -264,7 +265,7 @@ function onFileChange(e: Event): void {
 }
 
 // ── Image: Camera ──
-const cameraOpen    = ref(false);
+const { cameraOpen } = useCamera();
 const cameraError   = ref('');
 const videoEl       = ref<HTMLVideoElement | null>(null);
 const captureCanvas = ref<HTMLCanvasElement | null>(null);
