@@ -83,7 +83,8 @@
         <div class="relative w-full rounded-xl overflow-hidden" style="background: #000; aspect-ratio: 4/3;">
           <video
             ref="videoEl"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover transition-transform duration-200"
+            :style="flipped ? 'transform: scaleX(-1)' : ''"
             autoplay
             playsinline
             muted
@@ -93,15 +94,33 @@
           </div>
         </div>
 
-        <!-- Shutter button -->
-        <button
-          class="w-[60px] h-[60px] rounded-full border-4 border-white flex items-center justify-center transition-transform active:scale-90"
-          style="background: #fff;"
-          :disabled="!!cameraError"
-          @click="capturePhoto"
-        >
-          <div class="w-[46px] h-[46px] rounded-full" style="background: #008060;" />
-        </button>
+        <!-- Controls row: flip + shutter -->
+        <div class="flex items-center justify-between w-full px-2">
+          <!-- Flip button -->
+          <button
+            class="w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all active:scale-90"
+            :style="flipped
+              ? 'background: rgba(0,128,96,0.25); border: 1.5px solid #008060;'
+              : 'background: rgba(255,255,255,0.10); border: 1.5px solid rgba(255,255,255,0.25);'"
+            title="Flip horizontal"
+            @click="flipped = !flipped"
+          >
+            <span class="text-[20px] select-none">🔄</span>
+          </button>
+
+          <!-- Shutter button -->
+          <button
+            class="w-[60px] h-[60px] rounded-full border-4 border-white flex items-center justify-center transition-transform active:scale-90"
+            style="background: #fff;"
+            :disabled="!!cameraError"
+            @click="capturePhoto"
+          >
+            <div class="w-[46px] h-[46px] rounded-full" style="background: #008060;" />
+          </button>
+
+          <!-- Spacer to keep shutter centred -->
+          <div class="w-[44px]" />
+        </div>
 
         <!-- Hidden canvas for capture -->
         <canvas ref="captureCanvas" class="hidden" />
@@ -114,16 +133,18 @@
 import { ref, nextTick } from 'vue'
 import ImageEditPanel from '@/components/panels/ImageEditPanel.vue'
 import { useCanvas } from '@/composables/useCanvas'
+import { useCamera } from '@/composables/useCamera'
 import { useToast } from '@/composables/useToast'
 
 const { addImage } = useCanvas()
 const { showToast } = useToast()
+const { cameraOpen } = useCamera()
 
 const urlMode = ref(false)
 const urlInput = ref('')
 
 // Camera refs
-const cameraOpen = ref(false)
+const flipped = ref(false)
 const cameraError = ref('')
 const videoEl = ref<HTMLVideoElement | null>(null)
 const captureCanvas = ref<HTMLCanvasElement | null>(null)
@@ -153,6 +174,7 @@ function closeCamera(): void {
   stream = null
   cameraOpen.value = false
   cameraError.value = ''
+  flipped.value = false
 }
 
 function capturePhoto(): void {
@@ -165,6 +187,10 @@ function capturePhoto(): void {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
+  if (flipped.value) {
+    ctx.translate(canvas.width, 0)
+    ctx.scale(-1, 1)
+  }
   ctx.drawImage(video, 0, 0)
   const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
   addImage(dataUrl)
