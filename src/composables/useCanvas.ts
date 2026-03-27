@@ -47,6 +47,17 @@ function addSticker(s: string): void {
   })
 }
 
+function addImage(src: string): void {
+  saveUndo()
+  elements.value.push({
+    id: uid(), type: 'image', content: src,
+    color: '', fontFamily: '',
+    x: rnd(30, 120), y: rnd(50, 180),
+    scale: 1, rotation: 0, opacity: 1,
+  })
+  showToast('🖼 Image added')
+}
+
 function addIcon(ic: string): void {
   saveUndo()
   elements.value.push({
@@ -140,6 +151,7 @@ export function useCanvas() {
     addText,
     addSticker,
     addIcon,
+    addImage,
     removeEl,
     selectEl,
     deselect,

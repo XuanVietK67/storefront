@@ -47,6 +47,13 @@
       :style="{ color: element.color }"
     >{{ element.content }}</span>
 
+    <img
+      v-else-if="element.type === 'image'"
+      :src="element.content"
+      class="block max-w-[120px] max-h-[120px] w-auto h-auto object-contain rounded-[4px]"
+      draggable="false"
+    />
+
     <!-- Resize handle -->
     <div
       v-if="isSelected"
