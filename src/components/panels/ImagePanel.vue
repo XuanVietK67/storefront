@@ -64,73 +64,10 @@
     <ImageEditPanel />
   </div>
 
-  <!-- Camera modal -->
-  <Teleport to="body">
-    <div
-      v-if="cameraOpen"
-      class="fixed inset-0 z-50 flex flex-col items-center justify-center"
-      style="background: rgba(0,0,0,0.82);"
-      @click.self="closeCamera"
-    >
-      <div class="relative flex flex-col items-center gap-4 p-4 rounded-2xl" style="background: #1a1a1a; max-width: 360px; width: 100%;">
-        <!-- Header -->
-        <div class="flex items-center justify-between w-full">
-          <span class="text-white text-[13px] font-bold font-syne">Take a Photo</span>
-          <button class="text-white text-[20px] leading-none opacity-60 hover:opacity-100" @click="closeCamera">×</button>
-        </div>
-
-        <!-- Video preview -->
-        <div class="relative w-full rounded-xl overflow-hidden" style="background: #000; aspect-ratio: 4/3;">
-          <video
-            ref="videoEl"
-            class="w-full h-full object-cover transition-transform duration-200"
-            :style="flipped ? 'transform: scaleX(-1)' : ''"
-            autoplay
-            playsinline
-            muted
-          />
-          <div v-if="cameraError" class="absolute inset-0 flex items-center justify-center text-center px-4">
-            <span class="text-[12px]" style="color: #ff6b6b;">{{ cameraError }}</span>
-          </div>
-        </div>
-
-        <!-- Controls row: flip + shutter -->
-        <div class="flex items-center justify-between w-full px-2">
-          <!-- Flip button -->
-          <button
-            class="w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all active:scale-90"
-            :style="flipped
-              ? 'background: rgba(0,128,96,0.25); border: 1.5px solid #008060;'
-              : 'background: rgba(255,255,255,0.10); border: 1.5px solid rgba(255,255,255,0.25);'"
-            title="Flip horizontal"
-            @click="flipped = !flipped"
-          >
-            <span class="text-[20px] select-none">🔄</span>
-          </button>
-
-          <!-- Shutter button -->
-          <button
-            class="w-[60px] h-[60px] rounded-full border-4 border-white flex items-center justify-center transition-transform active:scale-90"
-            style="background: #fff;"
-            :disabled="!!cameraError"
-            @click="capturePhoto"
-          >
-            <div class="w-[46px] h-[46px] rounded-full" style="background: #008060;" />
-          </button>
-
-          <!-- Spacer to keep shutter centred -->
-          <div class="w-[44px]" />
-        </div>
-
-        <!-- Hidden canvas for capture -->
-        <canvas ref="captureCanvas" class="hidden" />
-      </div>
-    </div>
-  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref } from 'vue'
 import ImageEditPanel from '@/components/panels/ImageEditPanel.vue'
 import { useCanvas } from '@/composables/useCanvas'
 import { useCamera } from '@/composables/useCamera'
@@ -138,63 +75,16 @@ import { useToast } from '@/composables/useToast'
 
 const { addImage } = useCanvas()
 const { showToast } = useToast()
-const { cameraOpen } = useCamera()
+const { openCamera } = useCamera()
 
 const urlMode = ref(false)
 const urlInput = ref('')
-
-// Camera refs
-const flipped = ref(false)
-const cameraError = ref('')
-const videoEl = ref<HTMLVideoElement | null>(null)
-const captureCanvas = ref<HTMLCanvasElement | null>(null)
-let stream: MediaStream | null = null
 
 function cardHover(e: MouseEvent, on: boolean): void {
   const el = e.currentTarget as HTMLElement
   el.style.borderColor = on ? 'rgba(0,128,96,0.35)' : '#c4c4c4'
   el.style.background  = on ? 'rgba(0,128,96,0.06)' : '#f1f1f1'
   el.style.boxShadow   = on ? '0 2px 10px rgba(0,128,96,0.10)' : 'none'
-}
-
-async function openCamera(): Promise<void> {
-  cameraError.value = ''
-  cameraOpen.value = true
-  await nextTick()
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
-    if (videoEl.value) videoEl.value.srcObject = stream
-  } catch {
-    cameraError.value = 'Camera access denied or not available on this device.'
-  }
-}
-
-function closeCamera(): void {
-  stream?.getTracks().forEach(t => t.stop())
-  stream = null
-  cameraOpen.value = false
-  cameraError.value = ''
-  flipped.value = false
-}
-
-function capturePhoto(): void {
-  const video = videoEl.value
-  const canvas = captureCanvas.value
-  if (!video || !canvas) return
-
-  canvas.width  = video.videoWidth
-  canvas.height = video.videoHeight
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-
-  if (flipped.value) {
-    ctx.translate(canvas.width, 0)
-    ctx.scale(-1, 1)
-  }
-  ctx.drawImage(video, 0, 0)
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
-  addImage(dataUrl)
-  closeCamera()
 }
 
 function onFileChange(e: Event): void {

@@ -104,6 +104,9 @@
 
     <!-- Crop modal (singleton, controlled via useCrop) -->
     <CropModal />
+
+    <!-- Camera modal (singleton, controlled via useCamera) -->
+    <CameraModal />
   </div>
 </template>
 
@@ -120,6 +123,7 @@ import MobilePanels from "@/components/MobilePanels.vue";
 import MobileCta from "@/components/MobileCta.vue";
 import Toast from "@/components/Toast.vue";
 import CropModal from "@/components/CropModal.vue";
+import CameraModal from "@/components/CameraModal.vue";
 
 import { useCanvas } from "@/composables/useCanvas";
 import { useCamera } from "@/composables/useCamera";
