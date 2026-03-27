@@ -61,8 +61,7 @@
 
     <div class="h-px" style="background: linear-gradient(90deg, transparent, #d9d9d9, transparent);" />
 
-    <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Quick Add</p>
-    <EmojiGrid :items="PRESETS" :inline="false" @pick="addSticker" />
+    <ImageEditPanel />
   </div>
 
   <!-- Camera modal -->
@@ -113,12 +112,11 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import EmojiGrid from '@/components/ui/EmojiGrid.vue'
-import { PRESETS } from '@/constants'
+import ImageEditPanel from '@/components/panels/ImageEditPanel.vue'
 import { useCanvas } from '@/composables/useCanvas'
 import { useToast } from '@/composables/useToast'
 
-const { addSticker, addImage } = useCanvas()
+const { addImage } = useCanvas()
 const { showToast } = useToast()
 
 const urlMode = ref(false)

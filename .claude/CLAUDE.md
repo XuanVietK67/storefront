@@ -37,8 +37,8 @@ No test runner is configured.
 
 ## Branching Rules
 
-- **New features** — create a new git branch first; work there for the session.
-- **Bug fixes** — work on the `fixBug` branch only.
+- **New features(prompt start by feat)** — create a new git branch first feat/name of feature; work there for the session.
+- **Bug fixes** — work on the `fixBug/name of bug` branch only.
 
 ## Adding a New Tool/Panel
 
