@@ -33,6 +33,32 @@
         title="Clear all"
         @click="doClear"
       >🗑</button>
+
+      <div class="w-px h-[20px] flex-shrink-0" style="background: #e2e8f0;" />
+
+      <button
+        class="h-[34px] px-[10px] rounded-lg flex items-center gap-[5px] cursor-pointer text-[11px] font-syne font-bold select-none transition-all duration-150 flex-shrink-0 active:scale-95"
+        style="background: #008060; border: 1px solid #008060; color: #ffffff;"
+        title="Save design"
+        @click="saveDesign"
+        @mouseenter="(e) => { e.currentTarget.style.background = '#006b50'; e.currentTarget.style.borderColor = '#006b50' }"
+        @mouseleave="(e) => { e.currentTarget.style.background = '#008060'; e.currentTarget.style.borderColor = '#008060' }"
+      >
+        <span>💾</span>
+        <span class="hidden sm:inline">Save</span>
+      </button>
+
+      <button
+        class="h-[34px] px-[10px] rounded-lg flex items-center gap-[5px] cursor-pointer text-[11px] font-syne font-bold select-none transition-all duration-150 flex-shrink-0 active:scale-95"
+        style="background: #ffffff; border: 1px solid #e2e8f0; color: #64748b;"
+        title="Restore last saved design"
+        @click="loadDesign"
+        @mouseenter="(e) => applyHover(e)"
+        @mouseleave="(e) => removeHover(e)"
+      >
+        <span>📂</span>
+        <span class="hidden sm:inline">Load</span>
+      </button>
     </div>
   </header>
 </template>
@@ -40,7 +66,7 @@
 <script setup lang="ts">
 import { useCanvas } from '@/composables/useCanvas'
 
-const { undo, redo, doClear } = useCanvas()
+const { undo, redo, doClear, saveDesign, loadDesign } = useCanvas()
 
 function applyHover(e: MouseEvent): void {
   const btn = e.currentTarget as HTMLElement
