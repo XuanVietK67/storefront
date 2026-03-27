@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
 import TopBar from "@/components/TopBar.vue";
 import Sidebar from "@/components/Sidebar.vue";
@@ -149,6 +149,29 @@ const { cameraOpen } = useCamera();
 // Active tool (right panel / sidebar)
 const activeTool = ref("text");
 const activeMobPanel = ref("mp-text");
+
+const ELEMENT_TYPE_TO_TOOL = {
+  text:    "text",
+  image:   "image",
+  sticker: "sticker",
+  icon:    "icon",
+};
+
+const ELEMENT_TYPE_TO_MOB_PANEL = {
+  text:    "mp-text",
+  image:   "mp-image",
+  sticker: "mp-sticker",
+  icon:    "mp-icon",
+};
+
+// Redirect to the matching panel whenever a canvas element is selected.
+watch(selectedEl, (el) => {
+  if (!el) return;
+  const tool     = ELEMENT_TYPE_TO_TOOL[el.type];
+  const mobPanel = ELEMENT_TYPE_TO_MOB_PANEL[el.type];
+  if (tool)     activeTool.value     = tool;
+  if (mobPanel) activeMobPanel.value = mobPanel;
+});
 
 function setTool(key) {
   activeTool.value = key;
