@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm show:*)"
+      "Bash(npm show:*)",
+      "Edit(/.claude/skills/security-review/**)",
+      "Edit(/.claude/skills/deploy/**)"
     ]
   }
 }
