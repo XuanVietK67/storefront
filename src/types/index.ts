@@ -20,6 +20,12 @@ export interface CanvasElement {
   sepia?:      number  // 0–100, default 0
 }
 
+export interface SavedDesign {
+  version: '1'
+  savedAt: string          // ISO timestamp
+  elements: CanvasElement[]
+}
+
 export interface CartOrder {
   orderId:  string
   product:  string

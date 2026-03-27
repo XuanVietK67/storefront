@@ -1,7 +1,9 @@
 import { ref, computed } from 'vue'
 import { useHistory } from './useHistory'
 import { useToast } from './useToast'
-import type { CanvasElement, CartOrder } from '@/types'
+import type { CanvasElement, CartOrder, SavedDesign } from '@/types'
+
+const STORAGE_KEY = 'custommaker_design'
 
 let _nextId = 1
 function uid(): string { return `el_${_nextId++}_${Date.now()}` }
@@ -103,6 +105,39 @@ function zoom(factor: number): void {
   canvasScale.value = Math.max(0.5, Math.min(2.5, canvasScale.value * factor))
 }
 
+function saveDesign(): void {
+  if (!elements.value.length) { showToast('🎨 Nothing to save yet'); return }
+
+  const saved: SavedDesign = {
+    version: '1',
+    savedAt: new Date().toISOString(),
+    elements: JSON.parse(JSON.stringify(elements.value)),
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved))
+  } catch {
+    // quota exceeded or private-browsing — silent fail
+  }
+
+  console.log('[CustomMaker] Design saved:', saved)
+  showToast('💾 Design saved!')
+}
+
+function loadDesign(): void {
+  let raw: string | null = null
+  try { raw = localStorage.getItem(STORAGE_KEY) } catch { /* ignore */ }
+  if (!raw) { showToast('📭 No saved design found'); return }
+
+  let saved: SavedDesign
+  try { saved = JSON.parse(raw) } catch { showToast('⚠️ Saved data is corrupted'); return }
+
+  saveUndo()
+  restoreElements(saved.elements)
+  console.log('[CustomMaker] Design restored:', saved)
+  showToast('✅ Design restored!')
+}
+
 function addToCart(): void {
   if (!elements.value.length) { showToast('🎨 Add something first!'); return }
 
@@ -161,6 +196,8 @@ export function useCanvas() {
     redo,
     zoom,
     addToCart,
+    saveDesign,
+    loadDesign,
     saveUndo,
   }
 }
