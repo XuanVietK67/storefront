@@ -1,6 +1,6 @@
 export interface CanvasElement {
   id: string
-  type: 'text' | 'sticker' | 'icon'
+  type: 'text' | 'sticker' | 'icon' | 'image'
   content: string
   color: string
   fontFamily: string
