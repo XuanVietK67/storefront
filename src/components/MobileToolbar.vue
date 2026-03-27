@@ -19,14 +19,19 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
 defineProps<{ activePanel: string | null }>()
 defineEmits(['toggle'])
 
-const tools = [
-  { key: 'text',    panelId: 'mp-text',    icon: 'Ꭲ',  label: 'Text' },
-  { key: 'image',   panelId: 'mp-image',   icon: '🖼',  label: 'Image' },
-  { key: 'sticker', panelId: 'mp-sticker', icon: '✨', label: 'Sticker' },
-  { key: 'icon',    panelId: 'mp-icon',    icon: '◈',  label: 'Icon' },
-  { key: 'adjust',  panelId: 'mp-adjust',  icon: '⚡', label: 'Adjust' },
-]
+const { t } = useI18n()
+
+const tools = computed(() => [
+  { key: 'text',    panelId: 'mp-text',    icon: 'Ꭲ',  label: t('tools.text') },
+  { key: 'image',   panelId: 'mp-image',   icon: '🖼',  label: t('tools.image') },
+  { key: 'sticker', panelId: 'mp-sticker', icon: '✨', label: t('tools.sticker') },
+  { key: 'icon',    panelId: 'mp-icon',    icon: '◈',  label: t('tools.icon') },
+  { key: 'adjust',  panelId: 'mp-adjust',  icon: '⚡', label: t('tools.adjust') },
+])
 </script>

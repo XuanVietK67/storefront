@@ -1,7 +1,12 @@
 import { ref, computed } from 'vue'
 import { useHistory } from './useHistory'
 import { useToast } from './useToast'
+import { i18n } from '@/i18n'
 import type { CanvasElement, CartOrder, SavedDesign } from '@/types'
+
+function t(key: string): string {
+  return i18n.global.t(key) as string
+}
 
 const STORAGE_KEY = 'custommaker_design'
 
@@ -28,7 +33,7 @@ function restoreElements(snap: CanvasElement[]): void {
 }
 
 function addText(text: string): void {
-  if (!text?.trim()) { showToast('✏️ Type something first'); return }
+  if (!text?.trim()) { showToast(t('toast.typeSomethingFirst')); return }
   saveUndo()
   elements.value.push({
     id: uid(), type: 'text', content: text.trim(),
@@ -36,7 +41,7 @@ function addText(text: string): void {
     x: rnd(40, 130), y: rnd(70, 160),
     scale: 1, rotation: 0, opacity: 1,
   })
-  showToast('✅ Text added')
+  showToast(t('toast.textAdded'))
 }
 
 function addSticker(s: string): void {
@@ -57,7 +62,7 @@ function addImage(src: string): void {
     x: rnd(30, 120), y: rnd(50, 180),
     scale: 1, rotation: 0, opacity: 1,
   })
-  showToast('🖼 Image added')
+  showToast(t('toast.imageAdded'))
 }
 
 function addIcon(ic: string): void {
@@ -74,7 +79,7 @@ function removeEl(id: string): void {
   saveUndo()
   elements.value = elements.value.filter(e => e.id !== id)
   if (selectedId.value === id) selectedId.value = null
-  showToast('🗑 Removed')
+  showToast(t('toast.removed'))
 }
 
 function selectEl(id: string): void {
@@ -95,7 +100,7 @@ function doClear(): void {
   saveUndo()
   elements.value = []
   selectedId.value = null
-  showToast('🗑 Cleared')
+  showToast(t('toast.cleared'))
 }
 
 function undo(): void { doUndo(restoreElements, showToast) }
@@ -106,7 +111,7 @@ function zoom(factor: number): void {
 }
 
 function saveDesign(): void {
-  if (!elements.value.length) { showToast('🎨 Nothing to save yet'); return }
+  if (!elements.value.length) { showToast(t('toast.nothingToSave')); return }
 
   const saved: SavedDesign = {
     version: '1',
@@ -121,25 +126,25 @@ function saveDesign(): void {
   }
 
   console.log('[CustomMaker] Design saved:', saved)
-  showToast('💾 Design saved!')
+  showToast(t('toast.designSaved'))
 }
 
 function loadDesign(): void {
   let raw: string | null = null
   try { raw = localStorage.getItem(STORAGE_KEY) } catch { /* ignore */ }
-  if (!raw) { showToast('📭 No saved design found'); return }
+  if (!raw) { showToast(t('toast.noSavedDesign')); return }
 
   let saved: SavedDesign
-  try { saved = JSON.parse(raw) } catch { showToast('⚠️ Saved data is corrupted'); return }
+  try { saved = JSON.parse(raw) } catch { showToast(t('toast.corruptedData')); return }
 
   saveUndo()
   restoreElements(saved.elements)
   console.log('[CustomMaker] Design restored:', saved)
-  showToast('✅ Design restored!')
+  showToast(t('toast.designRestored'))
 }
 
 function addToCart(): void {
-  if (!elements.value.length) { showToast('🎨 Add something first!'); return }
+  if (!elements.value.length) { showToast(t('toast.addSomethingFirst')); return }
 
   // Deep-clone the current canvas state
   const snapshot: CanvasElement[] = JSON.parse(JSON.stringify(elements.value))
@@ -171,8 +176,8 @@ function addToCart(): void {
     ? `"${textLabels[0]}"${textLabels.length > 1 ? ` +${textLabels.length - 1} more` : ''}`
     : `${snapshot.length} element${snapshot.length !== 1 ? 's' : ''}`
 
-  showToast('🛒 Added to cart!')
-  setTimeout(() => showToast(`✅ Design saved — ${designLabel}`), 2000)
+  showToast(t('toast.addedToCart'))
+  setTimeout(() => showToast(`✅ ${designLabel}`), 2000)
 }
 
 export function useCanvas() {

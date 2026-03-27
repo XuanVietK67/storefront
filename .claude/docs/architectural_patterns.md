@@ -107,6 +107,38 @@ Panels watch `selectedEl` (not `selectedId`) to react to both selection changes 
 
 ---
 
+## 11. vue-i18n singleton and locale reactivity
+
+The app uses vue-i18n v9 with `legacy: false`. A single i18n instance is created in `src/i18n/index.ts` and registered on the Vue app in `src/main.ts`.
+
+**In components** — call `useI18n()` (requires component context):
+```ts
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+```
+
+**In composables** — `useI18n()` is unavailable outside component setup. Import the instance directly:
+```ts
+import { i18n } from '@/i18n'
+i18n.global.t('toast.imageAdded')
+```
+
+**Static arrays must be `computed()`** — `t()` is reactive only when called inside a reactive context. Any array that contains translated strings (tool labels, filter preset names, etc.) must be declared as `computed(() => [...])`, not a plain `const`. A plain array is evaluated once at setup and never re-evaluated on locale change:
+
+```ts
+// WRONG — labels freeze at mount time
+const tools = [{ label: t('tools.text') }]
+
+// CORRECT — re-evaluated whenever locale changes
+const tools = computed(() => [{ label: t('tools.text') }])
+```
+
+**Locale files** live in `src/i18n/locales/` — one file per locale (`en.ts`, `vi.ts`, `ja.ts`, `zh.ts`, `ko.ts`). All five must be updated together when adding a key. Keys are grouped by namespace: `nav`, `tools`, `panel`, `camera`, `textEdit`, `canvas`, `toast`, `lang`.
+
+**Locale persistence** — `setLocale(code)` in `src/i18n/index.ts` writes to `localStorage` under `custommaker_locale` and updates `document.documentElement.lang`.
+
+---
+
 ## 10. Responsive canvas with logical coordinate normalization
 
 Canvas render size varies by viewport; drag/resize logic works in a fixed logical coordinate space.

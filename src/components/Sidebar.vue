@@ -34,20 +34,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { SidebarItem } from '@/types'
 
 defineProps<{ activeTool: string }>()
 const emit = defineEmits<{ setTool: [key: string] }>()
 
-const tools: SidebarItem[] = [
-  { key: 'text',    icon: 'Ꭲ',  label: 'Text' },
-  { key: 'image',   icon: '🖼',  label: 'Image' },
-  { key: 'sticker', icon: '✨', label: 'Sticker' },
-  { key: 'icon',    icon: '◈',  label: 'Icon' },
+const { t } = useI18n()
+
+const tools = computed<SidebarItem[]>(() => [
+  { key: 'text',    icon: 'Ꭲ',  label: t('tools.text') },
+  { key: 'image',   icon: '🖼',  label: t('tools.image') },
+  { key: 'sticker', icon: '✨', label: t('tools.sticker') },
+  { key: 'icon',    icon: '◈',  label: t('tools.icon') },
   { divider: true },
-  { key: 'adjust',  icon: '⚡', label: 'Adjust' },
-  { key: 'layers',  icon: '◧',  label: 'Layers' },
-]
+  { key: 'adjust',  icon: '⚡', label: t('tools.adjust') },
+  { key: 'layers',  icon: '◧',  label: t('tools.layers') },
+])
 
 function setTool(key: string): void {
   emit('setTool', key)

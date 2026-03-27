@@ -1,36 +1,32 @@
 <template>
   <div class="flex flex-col gap-3">
-
-    <!-- Transform card -->
     <div class="rounded-[10px] p-3 flex flex-col gap-[10px]"
          style="background: #f8fafc; border: 1px solid #e2e8f0; box-shadow: 0 1px 6px rgba(99,102,241,0.06);">
-      <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Transform</p>
-      <SliderRow label="Size"    :min="25"  :max="400" v-model="sizeVal" :displayValue="Math.round(sizeVal) + '%'" />
-      <SliderRow label="Rotate"  :min="0"   :max="360" v-model="rotVal"  :displayValue="Math.round(rotVal) + '°'" />
-      <SliderRow label="Opacity" :min="10"  :max="100" v-model="opVal"   :displayValue="Math.round(opVal) + '%'" />
+      <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">{{ t('panel.transform') }}</p>
+      <SliderRow :label="t('panel.size')"    :min="25"  :max="400" v-model="sizeVal" :displayValue="Math.round(sizeVal) + '%'" />
+      <SliderRow :label="t('panel.rotate')"  :min="0"   :max="360" v-model="rotVal"  :displayValue="Math.round(rotVal) + '°'" />
+      <SliderRow :label="t('panel.opacity')" :min="10"  :max="100" v-model="opVal"   :displayValue="Math.round(opVal) + '%'" />
     </div>
 
-    <!-- Color override -->
-    <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">Color override</p>
+    <p class="font-syne text-[9px] font-bold tracking-[.12em] uppercase text-faint">{{ t('panel.colorOverride') }}</p>
     <ColorStrip v-model="overrideColor" />
 
-    <!-- No selection hint -->
     <p
       v-if="!selectedEl"
       class="text-[11px] text-center font-syne py-2"
       style="color: rgba(99,102,241,0.45);"
-    >
-      ✦ Select an element on the canvas
-    </p>
+    >{{ t('panel.selectHint') }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import SliderRow  from '@/components/ui/SliderRow.vue'
 import ColorStrip from '@/components/ui/ColorStrip.vue'
 import { useCanvas } from '@/composables/useCanvas'
 
+const { t } = useI18n()
 const { selectedEl, updateEl } = useCanvas()
 
 const sizeVal       = ref<number>(100)

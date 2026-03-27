@@ -8,12 +8,12 @@
       :style="activePanel === 'mp-text' ? 'max-height:240px; opacity:1' : 'max-height:0; opacity:0'"
     >
       <div class="px-4 pt-[10px] pb-[14px] flex flex-col gap-[10px]">
-        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">Add Text</p>
+        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">{{ t('panel.addText') }}</p>
         <div class="flex gap-2">
           <input
             v-model="mobTextInput"
             type="text"
-            placeholder="Type something…"
+            :placeholder="t('panel.typeSomething')"
             maxlength="28"
             autocomplete="off"
             class="flex-1 rounded-[8px] px-3 py-[9px] text-sm outline-none transition-all"
@@ -26,7 +26,7 @@
             class="flex-shrink-0 h-[40px] px-4 rounded-[7px] font-dm font-semibold text-[13px] text-white transition-all active:scale-[.95] hover:brightness-110"
             style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 3px 10px rgba(99,102,241,0.28);"
             @click="submitText"
-          >Add</button>
+          >{{ t('panel.add') }}</button>
         </div>
         <ColorStrip v-model="mobColor" />
         <FontPicker v-model="mobFont" />
@@ -40,7 +40,7 @@
       :style="activePanel === 'mp-image' ? (urlMode ? 'max-height:300px; opacity:1' : 'max-height:240px; opacity:1') : 'max-height:0; opacity:0'"
     >
       <div class="px-4 pt-[10px] pb-[14px] flex flex-col gap-[10px]">
-        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">Add Image</p>
+        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">{{ t('panel.addImage') }}</p>
         <div class="grid grid-cols-3 gap-[8px]">
           <!-- Camera -->
           <button
@@ -49,7 +49,7 @@
             @click="openCamera"
           >
             <span class="text-[20px]">📷</span>
-            <span class="text-[11px] font-syne font-bold text-fore">Camera</span>
+            <span class="text-[11px] font-syne font-bold text-fore">{{ t('panel.camera') }}</span>
           </button>
 
           <!-- Gallery -->
@@ -59,7 +59,7 @@
           >
             <input type="file" accept="image/*" class="hidden" @change="onFileChange" />
             <span class="text-[20px]">🗂</span>
-            <span class="text-[11px] font-syne font-bold text-fore">Gallery</span>
+            <span class="text-[11px] font-syne font-bold text-fore">{{ t('panel.gallery') }}</span>
           </label>
 
           <!-- URL -->
@@ -69,7 +69,7 @@
             @click="urlMode = !urlMode"
           >
             <span class="text-[20px]">🔗</span>
-            <span class="text-[11px] font-syne font-bold text-fore">URL</span>
+            <span class="text-[11px] font-syne font-bold text-fore">{{ t('panel.url') }}</span>
           </button>
         </div>
 
@@ -87,7 +87,7 @@
             class="px-3 py-[7px] rounded-[8px] text-[11px] font-bold text-white active:opacity-75"
             style="background:#008060;"
             @click="addFromUrl"
-          >Add</button>
+          >{{ t('panel.add') }}</button>
         </div>
 
         <div class="overflow-x-auto scrollbar-none">
@@ -104,7 +104,7 @@
       :style="activePanel === 'mp-sticker' ? 'max-height:240px; opacity:1' : 'max-height:0; opacity:0'"
     >
       <div class="px-4 pt-[10px] pb-[14px] flex flex-col gap-[10px]">
-        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">Stickers</p>
+        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">{{ t('panel.stickers') }}</p>
         <div class="overflow-x-auto scrollbar-none pb-[2px]">
           <EmojiGrid :items="STICKERS" :inline="true" @pick="addSticker" />
         </div>
@@ -118,7 +118,7 @@
       :style="activePanel === 'mp-icon' ? 'max-height:240px; opacity:1' : 'max-height:0; opacity:0'"
     >
       <div class="px-4 pt-[10px] pb-[14px] flex flex-col gap-[10px]">
-        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">Icons</p>
+        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">{{ t('panel.icons') }}</p>
         <div class="overflow-x-auto scrollbar-none pb-[2px]">
           <EmojiGrid :items="ICONS" :inline="true" @pick="addIcon" />
         </div>
@@ -134,20 +134,20 @@
         : 'max-height:0; opacity:0'"
     >
       <div class="px-4 pt-[10px] pb-[14px] flex flex-col gap-[10px]">
-        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">Adjust Selected</p>
+        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">{{ t('panel.adjustSelected') }}</p>
 
         <!-- No-selection hint -->
         <p
           v-if="!selectedEl"
           class="text-[11px] font-syne text-center py-[8px]"
           style="color:rgba(0,128,96,0.55);"
-        >✦ Select an element on the canvas</p>
+        >{{ t('panel.selectHint') }}</p>
 
         <!-- Image-specific editing controls -->
         <template v-else-if="selectedEl.type === 'image'">
           <div class="rounded-[9px] p-[10px] flex flex-col gap-[10px]" style="background:#f8fafc; border:1px solid #e2e8f0;">
-            <SliderRow label="Size"   :min="25"  :max="400" v-model="mobSize" :displayValue="mobSize + '%'" />
-            <SliderRow label="Rotate" :min="0"   :max="360" v-model="mobRot"  :displayValue="mobRot + '°'" />
+            <SliderRow :label="t('panel.size')"   :min="25"  :max="400" v-model="mobSize" :displayValue="mobSize + '%'" />
+            <SliderRow :label="t('panel.rotate')" :min="0"   :max="360" v-model="mobRot"  :displayValue="mobRot + '°'" />
           </div>
 
           <!-- Flip -->
@@ -156,12 +156,12 @@
               class="flex-1 py-[7px] rounded-[8px] text-[11px] font-bold font-syne active:scale-95"
               :style="selectedEl.flipX ? 'background:#008060;color:#fff;border:1px solid #008060;' : 'background:#f8fafc;color:#475569;border:1px solid #e2e8f0;'"
               @click="mobToggleFlip('flipX')"
-            >↔ H-Flip</button>
+            >{{ t('panel.hFlip') }}</button>
             <button
               class="flex-1 py-[7px] rounded-[8px] text-[11px] font-bold font-syne active:scale-95"
               :style="selectedEl.flipY ? 'background:#008060;color:#fff;border:1px solid #008060;' : 'background:#f8fafc;color:#475569;border:1px solid #e2e8f0;'"
               @click="mobToggleFlip('flipY')"
-            >↕ V-Flip</button>
+            >{{ t('panel.vFlip') }}</button>
           </div>
 
           <!-- Filter presets (horizontal scroll) -->
@@ -169,11 +169,11 @@
             <div class="flex gap-[5px]" style="width: max-content;">
               <button
                 v-for="p in MOB_FILTER_PRESETS"
-                :key="p.name"
+                :key="p.key"
                 class="px-3 py-[6px] rounded-[7px] text-[10px] font-syne font-bold flex-shrink-0 active:scale-95"
                 :style="mobIsActivePreset(p) ? 'background:#008060;color:#fff;border:1px solid transparent;' : 'background:#f8fafc;color:#475569;border:1px solid #e2e8f0;'"
                 @click="mobApplyPreset(p)"
-              >{{ p.name }}</button>
+              >{{ t('panel.' + p.key) }}</button>
             </div>
           </div>
 
@@ -182,7 +182,7 @@
             class="w-full py-[8px] rounded-[9px] text-[11px] font-bold font-syne text-white active:opacity-75"
             style="background: linear-gradient(135deg, #475569, #334155);"
             @click="mobTriggerCrop"
-          >✂ Crop Image</button>
+          >{{ t('panel.cropImage') }}</button>
         </template>
 
         <!-- Generic adjust for non-image elements -->
@@ -191,8 +191,8 @@
             class="rounded-[9px] p-[10px] flex flex-col gap-[10px]"
             style="background:#f8fafc; border:1px solid #e2e8f0;"
           >
-            <SliderRow label="Size"   :min="25"  :max="400" v-model="mobSize" :displayValue="mobSize + '%'" />
-            <SliderRow label="Rotate" :min="0"   :max="360" v-model="mobRot"  :displayValue="mobRot + '°'" />
+            <SliderRow :label="t('panel.size')"   :min="25"  :max="400" v-model="mobSize" :displayValue="mobSize + '%'" />
+            <SliderRow :label="t('panel.rotate')" :min="0"   :max="360" v-model="mobRot"  :displayValue="mobRot + '°'" />
           </div>
           <ColorStrip v-model="mobAdjColor" />
         </template>
@@ -204,6 +204,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useCamera } from "@/composables/useCamera";
 import { useCrop }   from "@/composables/useCrop";
 import ColorStrip from "@/components/ui/ColorStrip.vue";
@@ -216,6 +217,7 @@ import { useToast }  from "@/composables/useToast";
 
 defineProps<{ activePanel: string | null }>();
 
+const { t } = useI18n()
 const { addText, addSticker, addIcon, addImage, selectedEl, updateEl, saveUndo, curColor, curFont } = useCanvas();
 const { showToast } = useToast();
 const { openCrop }  = useCrop();
@@ -245,13 +247,13 @@ function submitText(): void {
 
 // ── Image editing ──
 const MOB_FILTER_PRESETS = [
-  { name: 'Normal',   brightness: 100, contrast: 100, saturate: 100, sepia: 0  },
-  { name: 'Vivid',    brightness: 100, contrast: 115, saturate: 160, sepia: 0  },
-  { name: 'Warm',     brightness: 105, contrast: 100, saturate: 130, sepia: 30 },
-  { name: 'Fade',     brightness: 115, contrast: 80,  saturate: 70,  sepia: 0  },
-  { name: 'B&W',      brightness: 100, contrast: 110, saturate: 0,   sepia: 0  },
-  { name: 'Sepia',    brightness: 105, contrast: 100, saturate: 80,  sepia: 80 },
-  { name: 'Drama',    brightness: 90,  contrast: 150, saturate: 60,  sepia: 10 },
+  { key: 'filterNormal',   brightness: 100, contrast: 100, saturate: 100, sepia: 0  },
+  { key: 'filterVivid',    brightness: 100, contrast: 115, saturate: 160, sepia: 0  },
+  { key: 'filterWarm',     brightness: 105, contrast: 100, saturate: 130, sepia: 30 },
+  { key: 'filterFade',     brightness: 115, contrast: 80,  saturate: 70,  sepia: 0  },
+  { key: 'filterBW',       brightness: 100, contrast: 110, saturate: 0,   sepia: 0  },
+  { key: 'filterSepia',    brightness: 105, contrast: 100, saturate: 80,  sepia: 80 },
+  { key: 'filterDrama',    brightness: 90,  contrast: 150, saturate: 60,  sepia: 10 },
 ]
 
 function mobToggleFlip(field: 'flipX' | 'flipY'): void {
@@ -260,7 +262,7 @@ function mobToggleFlip(field: 'flipX' | 'flipY'): void {
   updateEl(selectedEl.value.id, { [field]: !selectedEl.value[field] });
 }
 
-function mobIsActivePreset(p: typeof MOB_FILTER_PRESETS[0]): boolean {
+function mobIsActivePreset(p: (typeof MOB_FILTER_PRESETS)[0]): boolean {
   const el = selectedEl.value;
   if (!el) return false;
   return (
@@ -271,7 +273,7 @@ function mobIsActivePreset(p: typeof MOB_FILTER_PRESETS[0]): boolean {
   );
 }
 
-function mobApplyPreset(p: typeof MOB_FILTER_PRESETS[0]): void {
+function mobApplyPreset(p: (typeof MOB_FILTER_PRESETS)[0]): void {
   if (!selectedEl.value) return;
   saveUndo();
   updateEl(selectedEl.value.id, {
@@ -297,8 +299,8 @@ const urlInput = ref('');
 
 function addFromUrl(): void {
   const url = urlInput.value.trim();
-  if (!url) { showToast('⚠️ Enter an image URL'); return; }
-  if (!/^https?:\/\/.+/i.test(url)) { showToast('⚠️ URL must start with http(s)://'); return; }
+  if (!url) { showToast(t('toast.enterImageUrl')); return; }
+  if (!/^https?:\/\/.+/i.test(url)) { showToast(t('toast.urlMustStartHttp')); return; }
   addImage(url);
   urlInput.value = '';
   urlMode.value  = false;
@@ -307,7 +309,7 @@ function addFromUrl(): void {
 function onFileChange(e: Event): void {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
-  if (!file.type.startsWith('image/')) { showToast('⚠️ Please select an image file'); return; }
+  if (!file.type.startsWith('image/')) { showToast(t('toast.selectImageFile')); return; }
   const reader = new FileReader();
   reader.onload = (ev) => {
     const src = ev.target?.result as string;

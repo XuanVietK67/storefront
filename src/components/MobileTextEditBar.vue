@@ -7,7 +7,7 @@
 
       <!-- Row 1: label -->
       <div class="flex items-center gap-2">
-        <span class="text-[9px] font-syne font-bold tracking-[.10em] uppercase" style="color:#6366f1;">✏ Editing Text</span>
+        <span class="text-[9px] font-syne font-bold tracking-[.10em] uppercase" style="color:#6366f1;">{{ t('textEdit.editing') }}</span>
         <div class="flex-1 h-px" style="background:#e2e8f0;" />
       </div>
 
@@ -19,7 +19,7 @@
           type="text"
           maxlength="28"
           autocomplete="off"
-          placeholder="Type your text…"
+          :placeholder="t('textEdit.placeholder')"
           class="flex-1 rounded-[8px] px-3 py-[9px] text-sm outline-none transition-all"
           style="background:#f8fafc; border:1.5px solid #e2e8f0; color:#0f172a; caret-color:#6366f1;"
           @focus="(e) => (e.target as HTMLInputElement).style.borderColor = '#6366f1'"
@@ -30,13 +30,13 @@
           class="flex-shrink-0 h-[38px] px-4 rounded-[8px] font-dm font-semibold text-[13px] text-white transition-all active:scale-[.95] hover:brightness-110"
           style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 3px 10px rgba(99,102,241,0.28);"
           @click="done"
-        >Done</button>
+        >{{ t('textEdit.done') }}</button>
       </div>
 
       <!-- Row 3: color strip -->
       <div class="flex items-center gap-[6px] overflow-x-auto scrollbar-none py-[1px]">
         <!-- Color picker trigger -->
-        <label class="relative flex-shrink-0 cursor-pointer group" title="Pick any color">
+        <label class="relative flex-shrink-0 cursor-pointer group" :title="t('textEdit.pickColor')">
           <span
             class="block w-[28px] h-[28px] rounded-[6px] transition-all duration-100 group-hover:scale-110"
             :style="{
@@ -122,10 +122,12 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { COLORS } from '@/constants'
 import { useCanvas } from '@/composables/useCanvas'
 import FontPicker from '@/components/ui/FontPicker.vue'
 
+const { t } = useI18n()
 const { selectedEl, updateEl, removeEl, deselect, saveUndo } = useCanvas()
 
 const inputRef   = ref<HTMLInputElement | null>(null)
