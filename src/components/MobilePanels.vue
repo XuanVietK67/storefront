@@ -96,48 +96,6 @@
       </div>
     </div>
 
-  <!-- Camera modal (mobile full-screen) -->
-  <Teleport to="body">
-    <div
-      v-if="cameraOpen"
-      class="fixed inset-0 z-50 flex flex-col"
-      style="background:#000;"
-    >
-      <!-- Header bar -->
-      <div class="flex items-center justify-between px-4 py-3" style="background:rgba(0,0,0,0.6);">
-        <span class="text-white text-[14px] font-bold font-syne">Take a Photo</span>
-        <button class="text-white text-[24px] leading-none opacity-70 active:opacity-100" @click="closeCamera">×</button>
-      </div>
-
-      <!-- Video preview fills remaining space -->
-      <div class="flex-1 relative overflow-hidden">
-        <video
-          ref="videoEl"
-          class="w-full h-full object-cover"
-          autoplay
-          playsinline
-          muted
-        />
-        <div v-if="cameraError" class="absolute inset-0 flex items-center justify-center px-6 text-center" style="background:rgba(0,0,0,0.75);">
-          <span class="text-[13px]" style="color:#ff6b6b;">{{ cameraError }}</span>
-        </div>
-      </div>
-
-      <!-- Shutter bar -->
-      <div class="flex items-center justify-center py-6" style="background:rgba(0,0,0,0.6);">
-        <button
-          class="w-[68px] h-[68px] rounded-full border-4 border-white flex items-center justify-center transition-transform active:scale-90"
-          :disabled="!!cameraError"
-          @click="capturePhoto"
-        >
-          <div class="w-[52px] h-[52px] rounded-full" style="background:#008060;" />
-        </button>
-      </div>
-
-      <!-- Hidden canvas for capture -->
-      <canvas ref="captureCanvas" class="hidden" />
-    </div>
-  </Teleport>
 
     <!-- ── STICKER PANEL ── -->
     <div
@@ -245,7 +203,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch } from "vue";
 import { useCamera } from "@/composables/useCamera";
 import { useCrop }   from "@/composables/useCrop";
 import ColorStrip from "@/components/ui/ColorStrip.vue";
@@ -360,41 +318,5 @@ function onFileChange(e: Event): void {
 }
 
 // ── Image: Camera ──
-const { cameraOpen } = useCamera();
-const cameraError   = ref('');
-const videoEl       = ref<HTMLVideoElement | null>(null);
-const captureCanvas = ref<HTMLCanvasElement | null>(null);
-let stream: MediaStream | null = null;
-
-async function openCamera(): Promise<void> {
-  cameraError.value = '';
-  cameraOpen.value  = true;
-  await nextTick();
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-    if (videoEl.value) videoEl.value.srcObject = stream;
-  } catch {
-    cameraError.value = 'Camera access denied or not available on this device.';
-  }
-}
-
-function closeCamera(): void {
-  stream?.getTracks().forEach(t => t.stop());
-  stream = null;
-  cameraOpen.value  = false;
-  cameraError.value = '';
-}
-
-function capturePhoto(): void {
-  const video  = videoEl.value;
-  const canvas = captureCanvas.value;
-  if (!video || !canvas) return;
-  canvas.width  = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  ctx.drawImage(video, 0, 0);
-  addImage(canvas.toDataURL('image/jpeg', 0.9));
-  closeCamera();
-}
+const { openCamera } = useCamera();
 </script>
