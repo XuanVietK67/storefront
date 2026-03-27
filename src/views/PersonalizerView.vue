@@ -182,29 +182,29 @@ function toggleMobPanel(panelId) {
 }
 
 // Responsive canvas dimensions via CSS breakpoints
-const cvW = ref(268);
-const cvH = ref(308);
+const cvW = ref(308);
+const cvH = ref(352);
 
 function updateCanvasSize() {
   const w = window.innerWidth;
   if (w >= 1600) {
-    cvW.value = 396;
-    cvH.value = 452;
+    cvW.value = 460;
+    cvH.value = 526;
   } else if (w >= 1280) {
-    cvW.value = 350;
-    cvH.value = 400;
+    cvW.value = 406;
+    cvH.value = 464;
   } else if (w >= 1024) {
-    cvW.value = 316;
-    cvH.value = 362;
+    cvW.value = 364;
+    cvH.value = 416;
   } else if (w >= 768) {
-    cvW.value = 294;
-    cvH.value = 336;
+    cvW.value = 336;
+    cvH.value = 384;
   } else if (w >= 390) {
-    cvW.value = 232;
-    cvH.value = 264;
+    cvW.value = 266;
+    cvH.value = 304;
   } else {
-    cvW.value = 200;
-    cvH.value = 228;
+    cvW.value = 230;
+    cvH.value = 263;
   }
 }
 
