@@ -171,7 +171,9 @@
     <div
       class="flex-shrink-0 overflow-hidden transition-all duration-[220ms]"
       style="background:#ffffff; border-top:2px solid #008060;"
-      :style="activePanel === 'mp-adjust' ? 'max-height:240px; opacity:1' : 'max-height:0; opacity:0'"
+      :style="activePanel === 'mp-adjust'
+        ? (selectedEl?.type === 'image' ? 'max-height:380px; opacity:1' : 'max-height:240px; opacity:1')
+        : 'max-height:0; opacity:0'"
     >
       <div class="px-4 pt-[10px] pb-[14px] flex flex-col gap-[10px]">
         <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">Adjust Selected</p>
@@ -183,6 +185,49 @@
           style="color:rgba(0,128,96,0.55);"
         >✦ Select an element on the canvas</p>
 
+        <!-- Image-specific editing controls -->
+        <template v-else-if="selectedEl.type === 'image'">
+          <div class="rounded-[9px] p-[10px] flex flex-col gap-[10px]" style="background:#f8fafc; border:1px solid #e2e8f0;">
+            <SliderRow label="Size"   :min="25"  :max="400" v-model="mobSize" :displayValue="mobSize + '%'" />
+            <SliderRow label="Rotate" :min="0"   :max="360" v-model="mobRot"  :displayValue="mobRot + '°'" />
+          </div>
+
+          <!-- Flip -->
+          <div class="flex gap-2">
+            <button
+              class="flex-1 py-[7px] rounded-[8px] text-[11px] font-bold font-syne active:scale-95"
+              :style="selectedEl.flipX ? 'background:#008060;color:#fff;border:1px solid #008060;' : 'background:#f8fafc;color:#475569;border:1px solid #e2e8f0;'"
+              @click="mobToggleFlip('flipX')"
+            >↔ H-Flip</button>
+            <button
+              class="flex-1 py-[7px] rounded-[8px] text-[11px] font-bold font-syne active:scale-95"
+              :style="selectedEl.flipY ? 'background:#008060;color:#fff;border:1px solid #008060;' : 'background:#f8fafc;color:#475569;border:1px solid #e2e8f0;'"
+              @click="mobToggleFlip('flipY')"
+            >↕ V-Flip</button>
+          </div>
+
+          <!-- Filter presets (horizontal scroll) -->
+          <div class="overflow-x-auto scrollbar-none -mx-1 px-1">
+            <div class="flex gap-[5px]" style="width: max-content;">
+              <button
+                v-for="p in MOB_FILTER_PRESETS"
+                :key="p.name"
+                class="px-3 py-[6px] rounded-[7px] text-[10px] font-syne font-bold flex-shrink-0 active:scale-95"
+                :style="mobIsActivePreset(p) ? 'background:#008060;color:#fff;border:1px solid transparent;' : 'background:#f8fafc;color:#475569;border:1px solid #e2e8f0;'"
+                @click="mobApplyPreset(p)"
+              >{{ p.name }}</button>
+            </div>
+          </div>
+
+          <!-- Crop -->
+          <button
+            class="w-full py-[8px] rounded-[9px] text-[11px] font-bold font-syne text-white active:opacity-75"
+            style="background: linear-gradient(135deg, #475569, #334155);"
+            @click="mobTriggerCrop"
+          >✂ Crop Image</button>
+        </template>
+
+        <!-- Generic adjust for non-image elements -->
         <template v-else>
           <div
             class="rounded-[9px] p-[10px] flex flex-col gap-[10px]"
@@ -202,6 +247,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
 import { useCamera } from "@/composables/useCamera";
+import { useCrop }   from "@/composables/useCrop";
 import ColorStrip from "@/components/ui/ColorStrip.vue";
 import FontPicker from "@/components/ui/FontPicker.vue";
 import EmojiGrid  from "@/components/ui/EmojiGrid.vue";
@@ -212,8 +258,9 @@ import { useToast }  from "@/composables/useToast";
 
 defineProps<{ activePanel: string | null }>();
 
-const { addText, addSticker, addIcon, addImage, selectedEl, updateEl, curColor, curFont } = useCanvas();
+const { addText, addSticker, addIcon, addImage, selectedEl, updateEl, saveUndo, curColor, curFont } = useCanvas();
 const { showToast } = useToast();
+const { openCrop }  = useCrop();
 
 const mobTextInput = ref<string>("");
 const mobColor     = ref<string>(curColor.value);
@@ -236,6 +283,54 @@ watch(mobAdjColor, (v) => { if (selectedEl.value) updateEl(selectedEl.value.id, 
 function submitText(): void {
   addText(mobTextInput.value);
   mobTextInput.value = "";
+}
+
+// ── Image editing ──
+const MOB_FILTER_PRESETS = [
+  { name: 'Normal',   brightness: 100, contrast: 100, saturate: 100, sepia: 0  },
+  { name: 'Vivid',    brightness: 100, contrast: 115, saturate: 160, sepia: 0  },
+  { name: 'Warm',     brightness: 105, contrast: 100, saturate: 130, sepia: 30 },
+  { name: 'Fade',     brightness: 115, contrast: 80,  saturate: 70,  sepia: 0  },
+  { name: 'B&W',      brightness: 100, contrast: 110, saturate: 0,   sepia: 0  },
+  { name: 'Sepia',    brightness: 105, contrast: 100, saturate: 80,  sepia: 80 },
+  { name: 'Drama',    brightness: 90,  contrast: 150, saturate: 60,  sepia: 10 },
+]
+
+function mobToggleFlip(field: 'flipX' | 'flipY'): void {
+  if (selectedEl.value?.type !== 'image') return;
+  saveUndo();
+  updateEl(selectedEl.value.id, { [field]: !selectedEl.value[field] });
+}
+
+function mobIsActivePreset(p: typeof MOB_FILTER_PRESETS[0]): boolean {
+  const el = selectedEl.value;
+  if (!el) return false;
+  return (
+    (el.brightness ?? 100) === p.brightness &&
+    (el.contrast   ?? 100) === p.contrast   &&
+    (el.saturate   ?? 100) === p.saturate   &&
+    (el.sepia      ?? 0)   === p.sepia
+  );
+}
+
+function mobApplyPreset(p: typeof MOB_FILTER_PRESETS[0]): void {
+  if (!selectedEl.value) return;
+  saveUndo();
+  updateEl(selectedEl.value.id, {
+    brightness: p.brightness,
+    contrast:   p.contrast,
+    saturate:   p.saturate,
+    sepia:      p.sepia,
+  });
+}
+
+function mobTriggerCrop(): void {
+  if (selectedEl.value?.type !== 'image') return;
+  const id = selectedEl.value.id;
+  openCrop(selectedEl.value.content, (dataUrl) => {
+    saveUndo();
+    updateEl(id, { content: dataUrl });
+  });
 }
 
 // ── Image: URL ──

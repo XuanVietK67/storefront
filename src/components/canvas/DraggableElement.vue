@@ -6,7 +6,7 @@
     :style="{
       left: element.x + 'px',
       top:  element.y + 'px',
-      transform: `scale(${element.scale}) rotate(${element.rotation}deg)`,
+      transform: elementTransform,
       opacity: element.opacity,
       zIndex: isSelected ? 10 : 1,
     }"
@@ -51,6 +51,7 @@
       v-else-if="element.type === 'image'"
       :src="element.content"
       class="block max-w-[120px] max-h-[120px] w-auto h-auto object-contain rounded-[4px]"
+      :style="{ filter: imgFilter }"
       draggable="false"
     />
 
@@ -65,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-// import { ref } from 'vue'
+import { computed } from 'vue'
 import { makeDragHandlers, makeResizeHandlers } from '@/composables/useDrag'
 import type { CanvasElement } from '@/types'
 
@@ -83,7 +84,23 @@ const emit = defineEmits<{
   hint:   []
 }>()
 
-// const elRef = ref<HTMLDivElement | null>(null)
+const elementTransform = computed(() => {
+  const el = props.element
+  const sx = el.type === 'image' && el.flipX ? -el.scale : el.scale
+  const sy = el.type === 'image' && el.flipY ? -el.scale : el.scale
+  return `scaleX(${sx}) scaleY(${sy}) rotate(${el.rotation}deg)`
+})
+
+const imgFilter = computed(() => {
+  const el = props.element
+  if (el.type !== 'image') return 'none'
+  const b  = el.brightness ?? 100
+  const c  = el.contrast   ?? 100
+  const s  = el.saturate   ?? 100
+  const sp = el.sepia      ?? 0
+  if (b === 100 && c === 100 && s === 100 && sp === 0) return 'none'
+  return `brightness(${b}%) contrast(${c}%) saturate(${s}%) sepia(${sp}%)`
+})
 
 const { onPointerDown: onDragStart } = makeDragHandlers(
   (x, y) => emit('move', { id: props.element.id, x, y }),

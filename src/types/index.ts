@@ -11,6 +11,13 @@ export interface CanvasElement {
   opacity: number
   bold?: boolean
   shadow?: boolean
+  // image-only fields
+  flipX?:      boolean
+  flipY?:      boolean
+  brightness?: number  // 0–200, default 100
+  contrast?:   number  // 0–200, default 100
+  saturate?:   number  // 0–200, default 100
+  sepia?:      number  // 0–100, default 0
 }
 
 export interface CartOrder {

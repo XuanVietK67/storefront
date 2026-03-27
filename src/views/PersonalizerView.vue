@@ -101,6 +101,9 @@
 
     <!-- Toast notification -->
     <Toast />
+
+    <!-- Crop modal (singleton, controlled via useCrop) -->
+    <CropModal />
   </div>
 </template>
 
@@ -116,6 +119,7 @@ import MobileTextEditBar from "@/components/MobileTextEditBar.vue";
 import MobilePanels from "@/components/MobilePanels.vue";
 import MobileCta from "@/components/MobileCta.vue";
 import Toast from "@/components/Toast.vue";
+import CropModal from "@/components/CropModal.vue";
 
 import { useCanvas } from "@/composables/useCanvas";
 import { useCamera } from "@/composables/useCamera";

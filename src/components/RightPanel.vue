@@ -23,7 +23,8 @@
       <ImagePanel   v-else-if="activeTool === 'image'" />
       <StickerPanel v-else-if="activeTool === 'sticker'" />
       <IconPanel    v-else-if="activeTool === 'icon'" />
-      <AdjustPanel  v-else-if="activeTool === 'adjust'" />
+      <ImageEditPanel v-else-if="activeTool === 'adjust' && selectedEl?.type === 'image'" />
+      <AdjustPanel    v-else-if="activeTool === 'adjust'" />
       <LayersPanel  v-else-if="activeTool === 'layers'" />
     </div>
 
@@ -58,16 +59,17 @@
 </template>
 
 <script setup lang="ts">
-import TextPanel    from '@/components/panels/TextPanel.vue'
-import ImagePanel   from '@/components/panels/ImagePanel.vue'
-import StickerPanel from '@/components/panels/StickerPanel.vue'
-import IconPanel    from '@/components/panels/IconPanel.vue'
-import AdjustPanel  from '@/components/panels/AdjustPanel.vue'
-import LayersPanel  from '@/components/panels/LayersPanel.vue'
+import TextPanel      from '@/components/panels/TextPanel.vue'
+import ImagePanel     from '@/components/panels/ImagePanel.vue'
+import ImageEditPanel from '@/components/panels/ImageEditPanel.vue'
+import StickerPanel   from '@/components/panels/StickerPanel.vue'
+import IconPanel      from '@/components/panels/IconPanel.vue'
+import AdjustPanel    from '@/components/panels/AdjustPanel.vue'
+import LayersPanel    from '@/components/panels/LayersPanel.vue'
 import { TOOL_NAMES } from '@/constants'
 import { useCanvas } from '@/composables/useCanvas'
 
 defineProps<{ activeTool: string }>()
 
-const { addToCart } = useCanvas()
+const { addToCart, selectedEl } = useCanvas()
 </script>
