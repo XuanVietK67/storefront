@@ -35,7 +35,6 @@
 
       <!-- Row 3: color strip -->
       <div class="flex items-center gap-[6px] overflow-x-auto scrollbar-none py-[1px]">
-        <!-- Color picker trigger -->
         <label class="relative flex-shrink-0 cursor-pointer group" :title="t('textEdit.pickColor')">
           <span
             class="block w-[28px] h-[28px] rounded-[6px] transition-all duration-100 group-hover:scale-110"
@@ -46,7 +45,7 @@
             }"
           >
             <span
-              class="absolute inset-0 flex items-center justify-center text-[9px] pointer-events-none transition-opacity"
+              class="absolute inset-0 flex items-center justify-center text-[9px] pointer-events-none"
               :style="{ color: isColorLight(editColor) ? '#1a1a1a' : '#ffffff', opacity: isColorPreset ? '0.6' : '1' }"
             >✎</span>
           </span>
@@ -57,7 +56,6 @@
             @input="setColor(($event.target as HTMLInputElement).value)"
           />
         </label>
-        <!-- Preset swatches -->
         <button
           v-for="c in COLORS"
           :key="c"
@@ -72,48 +70,84 @@
         />
       </div>
 
-      <!-- Row 4: font picker + style buttons + size + delete -->
-      <div class="flex items-center gap-[6px]">
-        <!-- Font picker (takes remaining space) -->
+      <!-- Row 4: font picker + style toggles + delete -->
+      <div class="flex items-center gap-[5px]">
         <div class="flex-1 min-w-0">
           <FontPicker :modelValue="editFont" @update:modelValue="setFont" />
         </div>
-        <!-- Bold -->
         <button
-          class="flex-shrink-0 w-[34px] h-[34px] rounded-[7px] text-[14px] font-bold transition-all active:scale-90"
-          :style="editBold
-            ? 'background: linear-gradient(135deg,#6366f1,#4f46e5); border:1px solid transparent; color:#ffffff; box-shadow:0 2px 6px rgba(99,102,241,0.28);'
-            : 'background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;'"
-          @click="toggleBold"
-        >B</button>
-        <!-- Shadow -->
+          v-for="btn in styleButtons"
+          :key="btn.key"
+          class="flex-shrink-0 w-[30px] h-[30px] rounded-[7px] text-[13px] font-bold transition-all active:scale-90 flex items-center justify-center"
+          :style="btn.active
+            ? 'background:linear-gradient(135deg,#6366f1,#4f46e5);border:1px solid transparent;color:#fff;box-shadow:0 2px 6px rgba(99,102,241,0.28);'
+            : 'background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;'"
+          @click="btn.toggle()"
+        >
+          <span :style="btn.labelStyle">{{ btn.label }}</span>
+        </button>
         <button
-          class="flex-shrink-0 w-[34px] h-[34px] rounded-[7px] text-[13px] font-bold transition-all active:scale-90"
-          :style="editShadow
-            ? 'background: linear-gradient(135deg,#6366f1,#4f46e5); border:1px solid transparent; color:#ffffff; box-shadow:0 2px 6px rgba(99,102,241,0.28); text-shadow:1px 2px 4px rgba(255,255,255,0.30);'
-            : 'background:#f8fafc; border:1px solid #e2e8f0; color:#64748b; text-shadow:1px 2px 3px rgba(0,0,0,0.18);'"
-          @click="toggleShadow"
-        >S</button>
-        <!-- Size − -->
-        <button
-          class="flex-shrink-0 w-[34px] h-[34px] rounded-[7px] font-dm font-bold text-[12px] transition-all active:scale-90"
-          style="background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;"
-          @click="adjustSize(-0.15)"
-        >A−</button>
-        <!-- Size + -->
-        <button
-          class="flex-shrink-0 w-[34px] h-[34px] rounded-[7px] font-dm font-bold text-[12px] transition-all active:scale-90"
-          style="background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;"
-          @click="adjustSize(+0.15)"
-        >A+</button>
-        <!-- Delete -->
-        <button
-          class="flex-shrink-0 w-[34px] h-[34px] rounded-[7px] text-[15px] transition-all active:scale-90"
+          class="flex-shrink-0 w-[30px] h-[30px] rounded-[7px] text-[14px] transition-all active:scale-90 flex items-center justify-center"
           style="background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;"
           @mouseenter="(e) => { const b = e.currentTarget as HTMLElement; b.style.background='#fef2f2'; b.style.borderColor='#fca5a5'; b.style.color='#d72c0d'; }"
           @mouseleave="(e) => { const b = e.currentTarget as HTMLElement; b.style.background='#f8fafc'; b.style.borderColor='#e2e8f0'; b.style.color='#64748b'; }"
           @click="deleteEl"
         >🗑</button>
+      </div>
+
+      <!-- Row 5: font size + letter spacing -->
+      <div class="flex items-center gap-[5px]">
+        <!-- Font size group -->
+        <span class="text-[9px] font-syne font-bold tracking-wide uppercase flex-shrink-0" style="color:#94a3b8;">{{ t('textEdit.sizeDown')[0] }}a</span>
+        <button
+          class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[11px] active:scale-90 flex items-center justify-center"
+          style="background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;"
+          @click="adjustFontSize(-2)"
+        >{{ t('textEdit.sizeDown') }}</button>
+        <span
+          class="font-syne font-bold text-[11px] text-center flex-shrink-0"
+          style="min-width:32px; color:#334155;"
+        >{{ editFontSize }}px</span>
+        <button
+          class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[11px] active:scale-90 flex items-center justify-center"
+          style="background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;"
+          @click="adjustFontSize(+2)"
+        >{{ t('textEdit.sizeUp') }}</button>
+
+        <div class="w-px h-[18px] flex-shrink-0 mx-[2px]" style="background:#e2e8f0;" />
+
+        <!-- Letter spacing group -->
+        <span class="text-[9px] font-syne font-bold tracking-wide uppercase flex-shrink-0" style="color:#94a3b8;">{{ t('textEdit.spacingLabel') }}</span>
+        <button
+          class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[14px] active:scale-90 flex items-center justify-center"
+          style="background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;"
+          @click="adjustLetterSpacing(-1)"
+        >−</button>
+        <span
+          class="font-syne font-bold text-[11px] text-center flex-shrink-0"
+          style="min-width:20px; color:#334155;"
+        >{{ editLetterSpacing }}</span>
+        <button
+          class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[14px] active:scale-90 flex items-center justify-center"
+          style="background:#f8fafc; border:1px solid #e2e8f0; color:#64748b;"
+          @click="adjustLetterSpacing(+1)"
+        >+</button>
+      </div>
+
+      <!-- Row 6: text effects strip -->
+      <div class="flex items-center gap-[5px] overflow-x-auto scrollbar-none py-[1px]">
+        <button
+          v-for="eff in effectButtons"
+          :key="eff.key"
+          class="flex-shrink-0 flex items-center gap-[4px] h-[28px] px-[9px] rounded-full font-syne font-bold text-[10px] tracking-wide transition-all active:scale-95"
+          :style="editTextEffect === eff.key
+            ? 'background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;box-shadow:0 2px 6px rgba(99,102,241,0.28);'
+            : 'background:#f1f5f9;border:1px solid #e2e8f0;color:#64748b;'"
+          @click="toggleEffect(eff.key)"
+        >
+          <span class="text-[12px] leading-none">{{ eff.icon }}</span>
+          <span>{{ eff.label }}</span>
+        </button>
       </div>
 
     </div>
@@ -130,13 +164,17 @@ import FontPicker from '@/components/ui/FontPicker.vue'
 const { t } = useI18n()
 const { selectedEl, updateEl, removeEl, deselect, saveUndo } = useCanvas()
 
-const inputRef   = ref<HTMLInputElement | null>(null)
-const editText   = ref('')
-const editColor  = ref('')
-const editFont   = ref('Syne')
-const editBold   = ref(true)
-const editShadow = ref(false)
-let   snapshotSaved = false
+const inputRef         = ref<HTMLInputElement | null>(null)
+const editText         = ref('')
+const editColor        = ref('')
+const editFont         = ref('Syne')
+const editBold         = ref(true)
+const editShadow       = ref(false)
+const editFontSize     = ref(20)
+const editLetterSpacing = ref(0)
+const editTextDecoration = ref('')
+const editTextEffect   = ref('')
+let   snapshotSaved    = false
 
 const isColorPreset = computed(() => COLORS.includes(editColor.value))
 
@@ -150,18 +188,24 @@ function isColorLight(hex: string): boolean {
 
 watch(selectedEl, (el) => {
   if (!el || el.type !== 'text') return
-  editText.value   = el.content
-  editColor.value  = el.color
-  editFont.value   = el.fontFamily || 'Syne'
-  editBold.value   = el.bold !== false
-  editShadow.value = el.shadow ?? false
-  snapshotSaved    = false
+  editText.value          = el.content
+  editColor.value         = el.color
+  editFont.value          = el.fontFamily || 'Syne'
+  editBold.value          = el.bold !== false
+  editShadow.value        = el.shadow ?? false
+  editFontSize.value      = el.fontSize ?? 20
+  editLetterSpacing.value = el.letterSpacing ?? 0
+  editTextDecoration.value = el.textDecoration ?? ''
+  editTextEffect.value    = el.textEffect ?? ''
+  snapshotSaved           = false
   nextTick(() => inputRef.value?.focus())
 }, { immediate: true })
 
 function ensureSnapshot(): void {
   if (!snapshotSaved) { saveUndo(); snapshotSaved = true }
 }
+
+// ── Canvas mutation helpers ───────────────────────────────────────────────────
 
 function onTextInput(): void {
   if (!selectedEl.value) return
@@ -197,11 +241,34 @@ function toggleShadow(): void {
   updateEl(selectedEl.value.id, { shadow: editShadow.value })
 }
 
-function adjustSize(delta: number): void {
+function toggleDecoration(style: string): void {
   if (!selectedEl.value) return
   ensureSnapshot()
-  const next = Math.max(0.25, Math.min(4, (selectedEl.value.scale ?? 1) + delta))
-  updateEl(selectedEl.value.id, { scale: next })
+  editTextDecoration.value = editTextDecoration.value === style ? '' : style
+  updateEl(selectedEl.value.id, { textDecoration: editTextDecoration.value })
+}
+
+function adjustFontSize(delta: number): void {
+  if (!selectedEl.value) return
+  ensureSnapshot()
+  const next = Math.max(8, Math.min(72, editFontSize.value + delta))
+  editFontSize.value = next
+  updateEl(selectedEl.value.id, { fontSize: next })
+}
+
+function adjustLetterSpacing(delta: number): void {
+  if (!selectedEl.value) return
+  ensureSnapshot()
+  const next = Math.max(0, Math.min(20, editLetterSpacing.value + delta))
+  editLetterSpacing.value = next
+  updateEl(selectedEl.value.id, { letterSpacing: next })
+}
+
+function toggleEffect(key: string): void {
+  if (!selectedEl.value) return
+  ensureSnapshot()
+  editTextEffect.value = editTextEffect.value === key ? '' : key
+  updateEl(selectedEl.value.id, { textEffect: editTextEffect.value })
 }
 
 function deleteEl(): void {
@@ -211,4 +278,45 @@ function deleteEl(): void {
 function done(): void {
   deselect()
 }
+
+// ── Computed button descriptors (locale-reactive) ────────────────────────────
+
+const styleButtons = computed(() => [
+  {
+    key: 'bold',
+    label: t('textEdit.bold'),
+    labelStyle: 'font-weight:700;',
+    active: editBold.value,
+    toggle: toggleBold,
+  },
+  {
+    key: 'shadow',
+    label: t('textEdit.shadow'),
+    labelStyle: 'text-shadow:1px 1px 2px rgba(0,0,0,0.4);',
+    active: editShadow.value,
+    toggle: toggleShadow,
+  },
+  {
+    key: 'underline',
+    label: t('panel.underline'),
+    labelStyle: 'text-decoration:underline;',
+    active: editTextDecoration.value === 'underline',
+    toggle: () => toggleDecoration('underline'),
+  },
+  {
+    key: 'strikethrough',
+    label: t('panel.strikethrough'),
+    labelStyle: 'text-decoration:line-through;',
+    active: editTextDecoration.value === 'line-through',
+    toggle: () => toggleDecoration('line-through'),
+  },
+])
+
+const effectButtons = computed(() => [
+  { key: 'outline',    icon: '◻',  label: t('panel.effectOutline') },
+  { key: 'curved',     icon: '⌒',  label: t('panel.effectCurved') },
+  { key: 'wave',       icon: '〜', label: t('panel.effectWave') },
+  { key: '3d',         icon: '⬛', label: t('panel.effect3d') },
+  { key: 'longshadow', icon: '◑',  label: t('panel.effectLongShadow') },
+])
 </script>

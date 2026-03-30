@@ -39,7 +39,14 @@
             @dragend="onDragEnd($event, el.id)"
             @transformend="onTransformEnd($event, el.id)"
           >
-            <v-text v-if="el.type === 'text'" :config="textNodeConfig(el)" />
+            <v-text
+              v-if="el.type === 'text' && (!el.textEffect || el.textEffect === '' || el.textEffect === 'outline')"
+              :config="textNodeConfig(el)"
+            />
+            <v-image
+              v-else-if="el.type === 'text' && textEffectCanvases[el.id]"
+              :config="textEffectImageConfig(el)"
+            />
             <v-text
               v-else-if="el.type === 'sticker'"
               :config="stickerNodeConfig(el)"
@@ -90,6 +97,7 @@ import Konva from "konva";
 import BagSvg from "./BagSvg.vue";
 import { CANVAS_SIZE, PRINT_ZONE } from "@/constants";
 import type { CanvasElement } from "@/types";
+import { buildTextEffectCanvas } from "@/utils/textEffects";
 
 const props = defineProps<{
   elements: CanvasElement[];
@@ -186,6 +194,42 @@ function buildFilterCanvas(el: CanvasElement, img: HTMLImageElement): void {
   ctx.drawImage(img, 0, 0, w, h);
   filteredCanvases[el.id] = canvas;
 }
+
+// ── Text effect canvases ──────────────────────────────────────────────────────
+
+const textEffectCanvases = reactive<Record<string, HTMLCanvasElement>>({})
+
+watch(
+  () =>
+    props.elements
+      .filter(e => e.type === 'text')
+      .map(e => ({
+        id: e.id, content: e.content, fontFamily: e.fontFamily,
+        fontSize: e.fontSize, bold: e.bold, color: e.color,
+        letterSpacing: e.letterSpacing, textEffect: e.textEffect, shadow: e.shadow,
+      })),
+  (snapshots) => {
+    const liveIds = new Set(snapshots.map(s => s.id))
+
+    // Remove canvases for deleted elements
+    for (const id of Object.keys(textEffectCanvases)) {
+      if (!liveIds.has(id)) delete textEffectCanvases[id]
+    }
+
+    // Build / rebuild for elements that need an offscreen canvas
+    for (const snap of snapshots) {
+      const el = props.elements.find(e => e.id === snap.id)
+      if (!el) continue
+      if (snap.textEffect && snap.textEffect !== '' && snap.textEffect !== 'outline') {
+        const canvas = buildTextEffectCanvas(el)
+        if (canvas) textEffectCanvases[snap.id] = canvas
+      } else if (textEffectCanvases[snap.id]) {
+        delete textEffectCanvases[snap.id]
+      }
+    }
+  },
+  { deep: true, immediate: true },
+)
 
 // ── Print-zone indicator ──────────────────────────────────────────────────────
 
@@ -332,19 +376,31 @@ function groupConfig(el: CanvasElement) {
 }
 
 function textNodeConfig(el: CanvasElement) {
+  const isOutline = el.textEffect === 'outline'
+  const strokeW   = isOutline ? Math.max(1, Math.round((el.fontSize ?? 20) * 0.07)) : 0
   return {
-    text: el.content,
-    fontSize: 20,
-    fontFamily: el.fontFamily,
-    fill: el.color,
-    fontStyle: el.bold === false ? "normal" : "bold",
-    padding: 2,
-    shadowEnabled: el.shadow ?? false,
-    shadowColor: "rgba(0,0,0,0.45)",
-    shadowBlur: 6,
-    shadowOffsetX: 2,
-    shadowOffsetY: 3,
-  };
+    text:            el.content,
+    fontSize:        el.fontSize ?? 20,
+    fontFamily:      el.fontFamily,
+    fill:            isOutline ? '' : el.color,
+    fontStyle:       el.bold === false ? 'normal' : 'bold',
+    padding:         2,
+    shadowEnabled:   el.shadow ?? false,
+    shadowColor:     'rgba(0,0,0,0.45)',
+    shadowBlur:      6,
+    shadowOffsetX:   2,
+    shadowOffsetY:   3,
+    letterSpacing:   el.letterSpacing ?? 0,
+    textDecoration:  el.textDecoration ?? '',
+    stroke:          isOutline ? el.color : undefined,
+    strokeWidth:     strokeW,
+  }
+}
+
+function textEffectImageConfig(el: CanvasElement) {
+  const canvas = textEffectCanvases[el.id]
+  if (!canvas) return { x: 0, y: 0, width: 0, height: 0, listening: false }
+  return { image: canvas, x: 0, y: 0, width: canvas.width, height: canvas.height }
 }
 
 function stickerNodeConfig(el: CanvasElement) {

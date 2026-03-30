@@ -32,7 +32,16 @@ function restoreElements(snap: CanvasElement[]): void {
   selectedId.value = null
 }
 
-function addText(text: string): void {
+interface TextStyleOptions {
+  bold?: boolean
+  shadow?: boolean
+  fontSize?: number
+  letterSpacing?: number
+  textDecoration?: string
+  textEffect?: string
+}
+
+function addText(text: string, opts: TextStyleOptions = {}): void {
   if (!text?.trim()) { showToast(t('toast.typeSomethingFirst')); return }
   saveUndo()
   elements.value.push({
@@ -40,6 +49,12 @@ function addText(text: string): void {
     color: curColor.value, fontFamily: curFont.value,
     x: rnd(40, 130), y: rnd(70, 160),
     scale: 1, rotation: 0, opacity: 1,
+    ...(opts.bold           !== undefined && { bold:           opts.bold }),
+    ...(opts.shadow         !== undefined && { shadow:         opts.shadow }),
+    ...(opts.fontSize       !== undefined && { fontSize:       opts.fontSize }),
+    ...(opts.letterSpacing  !== undefined && { letterSpacing:  opts.letterSpacing }),
+    ...(opts.textDecoration !== undefined && { textDecoration: opts.textDecoration }),
+    ...(opts.textEffect     !== undefined && { textEffect:     opts.textEffect }),
   })
   showToast(t('toast.textAdded'))
 }
