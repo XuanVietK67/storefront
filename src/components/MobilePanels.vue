@@ -5,7 +5,7 @@
     <div
       class="flex-shrink-0 overflow-hidden transition-all duration-[220ms]"
       style="background:#ffffff; border-top:2px solid #008060;"
-      :style="activePanel === 'mp-text' ? 'max-height:240px; opacity:1' : 'max-height:0; opacity:0'"
+      :style="activePanel === 'mp-text' ? 'max-height:480px; opacity:1' : 'max-height:0; opacity:0'"
     >
       <div class="px-4 pt-[10px] pb-[14px] flex flex-col gap-[10px]">
         <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">{{ t('panel.addText') }}</p>
@@ -28,8 +28,54 @@
             @click="submitText"
           >{{ t('panel.add') }}</button>
         </div>
+
         <ColorStrip v-model="mobColor" />
         <FontPicker v-model="mobFont" />
+
+        <!-- Style toggles -->
+        <div class="flex gap-[6px]">
+          <button
+            v-for="btn in mobStyleButtons"
+            :key="btn.key"
+            class="flex-1 h-[32px] rounded-[7px] text-[12px] font-semibold transition-all active:scale-95 flex items-center justify-center"
+            :style="btn.active
+              ? 'background:#6366f1;color:#fff;box-shadow:0 2px 6px rgba(99,102,241,0.28);'
+              : 'background:#f1f5f9;color:#64748b;border:1.5px solid #e2e8f0;'"
+            @click="btn.toggle()"
+          >
+            <span :style="btn.labelStyle">{{ btn.label }}</span>
+          </button>
+        </div>
+
+        <!-- Font size + letter spacing -->
+        <div class="flex items-center gap-[5px]">
+          <span class="text-[9px] font-syne font-bold uppercase tracking-wide flex-shrink-0" style="color:#94a3b8;">Aa</span>
+          <button class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[11px] active:scale-90 flex items-center justify-center" style="background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;" @click="adjustMobFontSize(-2)">A−</button>
+          <span class="font-syne font-bold text-[11px] text-center flex-shrink-0" style="min-width:32px;color:#334155;">{{ mobFontSize }}px</span>
+          <button class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[11px] active:scale-90 flex items-center justify-center" style="background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;" @click="adjustMobFontSize(+2)">A+</button>
+          <div class="w-px h-[18px] flex-shrink-0 mx-[2px]" style="background:#e2e8f0;" />
+          <span class="text-[9px] font-syne font-bold uppercase tracking-wide flex-shrink-0" style="color:#94a3b8;">{{ t('textEdit.spacingLabel') }}</span>
+          <button class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[14px] active:scale-90 flex items-center justify-center" style="background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;" @click="adjustMobLetterSpacing(-1)">−</button>
+          <span class="font-syne font-bold text-[11px] text-center flex-shrink-0" style="min-width:20px;color:#334155;">{{ mobLetterSpacing }}</span>
+          <button class="flex-shrink-0 w-[28px] h-[28px] rounded-[6px] font-dm font-bold text-[14px] active:scale-90 flex items-center justify-center" style="background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;" @click="adjustMobLetterSpacing(+1)">+</button>
+        </div>
+
+        <!-- Text effects -->
+        <p class="text-[9px] font-syne font-bold tracking-[.12em] uppercase text-accent">{{ t('panel.textEffects') }}</p>
+        <div class="grid grid-cols-5 gap-[5px]">
+          <button
+            v-for="eff in mobEffectButtons"
+            :key="eff.key"
+            class="h-[38px] rounded-[8px] flex flex-col items-center justify-center gap-[1px] transition-all active:scale-95"
+            :style="mobTextEffect === eff.key
+              ? 'background:#6366f1;color:#fff;box-shadow:0 2px 8px rgba(99,102,241,0.30);'
+              : 'background:#f1f5f9;color:#64748b;border:1.5px solid #e2e8f0;'"
+            @click="toggleMobEffect(eff.key)"
+          >
+            <span class="text-[13px] leading-none">{{ eff.icon }}</span>
+            <span class="text-[8px] font-syne font-bold tracking-wide leading-none">{{ eff.label }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -203,7 +249,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useCamera } from "@/composables/useCamera";
 import { useCrop }   from "@/composables/useCrop";
@@ -222,12 +268,18 @@ const { addText, addSticker, addIcon, addImage, selectedEl, updateEl, saveUndo, 
 const { showToast } = useToast();
 const { openCrop }  = useCrop();
 
-const mobTextInput = ref<string>("");
-const mobColor     = ref<string>(curColor.value);
-const mobFont      = ref<string>(curFont.value);
-const mobSize      = ref<number>(100);
-const mobRot       = ref<number>(0);
-const mobAdjColor  = ref<string>("#1a1a1a");
+const mobTextInput      = ref<string>("");
+const mobColor          = ref<string>(curColor.value);
+const mobFont           = ref<string>(curFont.value);
+const mobSize           = ref<number>(100);
+const mobRot            = ref<number>(0);
+const mobAdjColor       = ref<string>("#1a1a1a");
+const mobBold           = ref<boolean>(true);
+const mobShadow         = ref<boolean>(false);
+const mobTextDecoration = ref<string>('');
+const mobFontSize       = ref<number>(20);
+const mobLetterSpacing  = ref<number>(0);
+const mobTextEffect     = ref<string>('');
 
 watch(mobColor, (v) => { curColor.value = v; });
 watch(mobFont,  (v) => { curFont.value  = v; });
@@ -240,8 +292,72 @@ watch(mobSize,     (v) => { if (selectedEl.value) updateEl(selectedEl.value.id, 
 watch(mobRot,      (v) => { if (selectedEl.value) updateEl(selectedEl.value.id, { rotation: v }); });
 watch(mobAdjColor, (v) => { if (selectedEl.value) updateEl(selectedEl.value.id, { color: v }); });
 
+// ── Mobile text panel helpers ─────────────────────────────────────────────────
+
+function adjustMobFontSize(delta: number): void {
+  mobFontSize.value = Math.max(8, Math.min(72, mobFontSize.value + delta))
+}
+
+function adjustMobLetterSpacing(delta: number): void {
+  mobLetterSpacing.value = Math.max(0, Math.min(20, mobLetterSpacing.value + delta))
+}
+
+function toggleMobDecoration(style: string): void {
+  mobTextDecoration.value = mobTextDecoration.value === style ? '' : style
+}
+
+function toggleMobEffect(key: string): void {
+  mobTextEffect.value = mobTextEffect.value === key ? '' : key
+}
+
+const mobStyleButtons = computed(() => [
+  {
+    key: 'bold',
+    label: t('textEdit.bold'),
+    labelStyle: 'font-weight:700;',
+    active: mobBold.value,
+    toggle: () => { mobBold.value = !mobBold.value },
+  },
+  {
+    key: 'shadow',
+    label: t('textEdit.shadow'),
+    labelStyle: 'text-shadow:1px 1px 2px rgba(0,0,0,0.35);',
+    active: mobShadow.value,
+    toggle: () => { mobShadow.value = !mobShadow.value },
+  },
+  {
+    key: 'underline',
+    label: t('panel.underline'),
+    labelStyle: 'text-decoration:underline;',
+    active: mobTextDecoration.value === 'underline',
+    toggle: () => toggleMobDecoration('underline'),
+  },
+  {
+    key: 'strikethrough',
+    label: t('panel.strikethrough'),
+    labelStyle: 'text-decoration:line-through;',
+    active: mobTextDecoration.value === 'line-through',
+    toggle: () => toggleMobDecoration('line-through'),
+  },
+])
+
+const mobEffectButtons = computed(() => [
+  { key: 'outline',    icon: '◻',  label: t('panel.effectOutline') },
+  { key: 'curved',     icon: '⌒',  label: t('panel.effectCurved') },
+  { key: 'wave',       icon: '〜', label: t('panel.effectWave') },
+  { key: '3d',         icon: '⬛', label: t('panel.effect3d') },
+  { key: 'longshadow', icon: '◑',  label: t('panel.effectLongShadow') },
+])
+
 function submitText(): void {
-  addText(mobTextInput.value);
+  addText(mobTextInput.value, {
+    bold:           mobBold.value,
+    shadow:         mobShadow.value,
+    fontSize:       mobFontSize.value,
+    letterSpacing:  mobLetterSpacing.value,
+    textDecoration: mobTextDecoration.value,
+    textEffect:     mobTextEffect.value,
+  });
   mobTextInput.value = "";
 }
 

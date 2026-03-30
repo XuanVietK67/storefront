@@ -11,6 +11,10 @@ export interface CanvasElement {
   opacity: number
   bold?: boolean
   shadow?: boolean
+  fontSize?: number       // logical px, default 20
+  letterSpacing?: number  // px, default 0
+  textDecoration?: string // '' | 'underline' | 'line-through'
+  textEffect?: string     // '' | 'outline' | 'curved' | 'wave' | '3d' | 'longshadow'
   // image-only fields
   flipX?:      boolean
   flipY?:      boolean
